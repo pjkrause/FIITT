@@ -1,0 +1,61 @@
+// Place all the styles related to the Steps controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+body {
+    background: #fafafa;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #333;
+}
+
+.base-unit {
+    margin: 50px auto 0 auto;
+    width: 1000px;
+    min-height: 500px;
+    font-size: 15px;
+    font-weight: 200;
+    line-height: 20px;
+    background-color: #aab;
+    cborder-radius: 6px;
+    padding: 60px;
+
+  h1 {
+    font-size: 20px;
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+
+  h2 {
+    font-size: 17px;
+  }
+}
+
+.base-unit 
+
+.left_element {
+    margin-top: 10px;
+    text-align: center;
+    float: left;
+    clear: left;
+    width: 450px;
+    background-color: #ccd;
+    border-radius: 50px;
+
+}
+
+.right_element {
+    margin-left: 480px;
+    width: 565px;
+    background-color: #fff;
+    height: 200px;
+    padding-top: 2px;
+}
+
+.right_element h1 {
+    text-align: center;
+    font-size: 18px;
+    background-color: #a40;
+    padding: 5px;
+    margin: 2px;
+    color: #eee;
+}
