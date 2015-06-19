@@ -1,0 +1,31 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Stakeholder Messages</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Step</th>
+      <th>Source</th>
+      <th>Message</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @stakeholder_messages.each do |stakeholder_message| %>
+      <tr>
+        <td><%= stakeholder_message.step_id %></td>
+        <td><%= stakeholder_message.source %></td>
+        <td><%= stakeholder_message.message %></td>
+        <td><%= link_to 'Show', stakeholder_message %></td>
+        <td><%= link_to 'Edit', edit_stakeholder_message_path(stakeholder_message) %></td>
+        <td><%= link_to 'Destroy', stakeholder_message, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Stakeholder message', new_stakeholder_message_path %>

@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Step:</strong>
+  <%= @stakeholder_message.step_id %>
+</p>
+
+<p>
+  <strong>Source:</strong>
+  <%= @stakeholder_message.source %>
+</p>
+
+<p>
+  <strong>Message:</strong>
+  <%= @stakeholder_message.message %>
+</p>
+
+<%= link_to 'Edit', edit_stakeholder_message_path(@stakeholder_message) %> |
+<%= link_to 'Back', stakeholder_messages_path %>

@@ -1,0 +1,53 @@
+<%= form_for(@decision) do |f| %>
+  <% if @decision.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@decision.errors.count, "error") %> prohibited this decision from being saved:</h2>
+
+      <ul>
+      <% @decision.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :choice %><br>
+    <%= f.text_area :choice %>
+  </div>
+  <div class="field">
+    <%= f.label :rt %><br>
+    <%= f.number_field :rt %>
+  </div>
+  <div class="field">
+    <%= f.label :ec %><br>
+    <%= f.number_field :ec %>
+  </div>
+  <div class="field">
+    <%= f.label :ic %><br>
+    <%= f.number_field :ic %>
+  </div>
+  <div class="field">
+    <%= f.label :mp %><br>
+    <%= f.number_field :mp %>
+  </div>
+  <div class="field">
+    <%= f.label :pp %><br>
+    <%= f.number_field :pp %>
+  </div>
+  <div class="field">
+    <%= f.label :days %><br>
+    <%= f.number_field :days %>
+  </div>
+  <div class="field">
+    <%= f.label :next_step %><br>
+    <%= f.number_field :next_step %>
+  </div>
+  <div class="field">
+    <%= f.label :step_id %><br>
+    <%= f.number_field :step_id %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

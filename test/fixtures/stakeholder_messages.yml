@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  step_id: 1
+  source: MyString
+  message: MyText
+
+two:
+  step_id: 1
+  source: MyString
+  message: MyText

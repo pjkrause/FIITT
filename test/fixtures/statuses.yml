@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  crt: 1
+  external_communication: 1
+  internal_communication: 1
+  media_perception: 1
+  public_perception: 1
+  day_no: 1
+
+two:
+  crt: 1
+  external_communication: 1
+  internal_communication: 1
+  media_perception: 1
+  public_perception: 1
+  day_no: 1

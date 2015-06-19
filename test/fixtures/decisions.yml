@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  choice: MyText
+  rt: 1
+  ec: 1
+  ic: 1
+  mp: 1
+  pp: 1
+  days: 1
+  next_step: 1
+  step_id: 1
+
+two:
+  choice: MyText
+  rt: 1
+  ec: 1
+  ic: 1
+  mp: 1
+  pp: 1
+  days: 1
+  next_step: 1
+  step_id: 1

@@ -1,0 +1,49 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Choice:</strong>
+  <%= @decision.choice %>
+</p>
+
+<p>
+  <strong>Rt:</strong>
+  <%= @decision.rt %>
+</p>
+
+<p>
+  <strong>Ec:</strong>
+  <%= @decision.ec %>
+</p>
+
+<p>
+  <strong>Ic:</strong>
+  <%= @decision.ic %>
+</p>
+
+<p>
+  <strong>Mp:</strong>
+  <%= @decision.mp %>
+</p>
+
+<p>
+  <strong>Pp:</strong>
+  <%= @decision.pp %>
+</p>
+
+<p>
+  <strong>Days:</strong>
+  <%= @decision.days %>
+</p>
+
+<p>
+  <strong>Next step:</strong>
+  <%= @decision.next_step %>
+</p>
+
+<p>
+  <strong>Step:</strong>
+  <%= @decision.step_id %>
+</p>
+
+<%= link_to 'Edit', edit_decision_path(@decision) %> |
+<%= link_to 'Back', decisions_path %>
