@@ -1,12 +1,8 @@
 <p id="notice"><%= notice %></p>
 
-<p>
-  <strong>General message:</strong>
-  <%= @step.general_message %>
-</p>
-
   <section class="left_element">
     <h1>USER DASHBOARD</h1>
+    <h2>DAY: <%= @status.day_no %></h2>
     <ul>
       <li>External Communication: <%= @status.external_communication %></li>
       <li>Internal Communication: <%= @status.internal_communication %></li>
@@ -32,14 +28,12 @@
   </section>
 
   <section class="right_element">
-    <h1>Public</h1>
-    <% if @messages %>
-      <h2>Messages</h2>
-      <ul>
+    <h1>Messages</h1>
+    <% if @messages %>     
         <% for message in @messages %>
-        <li><%= message.source %>: <%= message.message %></li>
+        <h2><%= message.source %></h2>
+        <p><%= message.message %></p>
         <% end %>
-      </ul>
     <% end %>
 
   </section>
