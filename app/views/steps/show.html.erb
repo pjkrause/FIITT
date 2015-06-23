@@ -1,5 +1,3 @@
-<p id="notice"><%= notice %></p>
-
   <section class="left_element">
     <h1>USER DASHBOARD</h1>
     <h2>DAY: <%= @status.day_no %></h2>
@@ -19,11 +17,15 @@
     <h1>ACTION BOX</h1>
     <% if @decision_choices %>
       <h2>Decision Choices</h2>
+      <% if @decision_choices != [] %>
       <ul>
         <% for decision in @decision_choices %>
         <li><%= decision.choice %> <%= button_to "Select", '/next_step/' + decision.id.to_s, method: :get %></li>
         <% end %>
       </ul>
+      <% else %>
+      <h2>Game Over!</h2>
+      <% end %>
     <% end %>
   </section>
 
