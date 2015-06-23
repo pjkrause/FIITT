@@ -40,14 +40,19 @@ body {
     width: 450px;
     background-color: #ccd;
     border-radius: 50px;
-
+    ul {
+        text-align: left;
+    }
+    li {
+        list-style: none;
+    }
 }
 
 .right_element {
     margin-left: 480px;
     width: 565px;
     background-color: #fff;
-    height: 200px;
+    min-height: 200px;
     padding-top: 2px;
 }
 
