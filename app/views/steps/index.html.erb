@@ -1,29 +1,10 @@
 <p id="notice"><%= notice %></p>
 
-<h1>Listing Steps</h1>
-
-<table>
-  <thead>
-    <tr>
-      <th>General message</th>
-      <th>Status message</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @steps.each do |step| %>
-      <tr>
-        <td><%= step.general_message %></td>
-        <td><%= step.status_message %></td>
-        <td><%= link_to 'Show', step %></td>
-        <td><%= link_to 'Edit', edit_step_path(step) %></td>
-        <td><%= link_to 'Destroy', step, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<br>
-
-<%= link_to 'New Step', new_step_path %>
+<h1>Aflatoxin in Corn Oil</h1>
+<p>
+  Your company, Oils Unlimited, is a medium-sized enterprise importing vegetable oils, such as rapeseed, groundnut, sunflower, soybean, olive, corn and sesame, from several countries such as India, China, Sudan, Argentina and Indonesia and repackaged under your own brand names. One of your products is Corn-Oh-Lio, a brand of cooking corn oil. You supply this product to small and medium-scale food business operators in the UK and France. Your clients include individual retailers, snack food manufacturers and fast food restaurants, and at least one major retail chain in the UK called Tesland.
+</p>
+<p>
+  <% step = @steps[0] %>
+  <%= button_to "Start the Game", step, method: :get %>
+</p>
