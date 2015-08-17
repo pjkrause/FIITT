@@ -1,3 +1,12 @@
+<nav id="sign_in">
+  <% if player_signed_in? %>
+    Signed in as <%= current_player.email %>:
+    <%= link_to "Sign out", destroy_player_session_path, :method => :delete %>
+  <% else %>
+    <%= link_to "Sign up", new_player_registration_path %> or
+    <%= link_to "Sign in", new_player_session_path %>
+  <% end %>
+</nav>
 <p id="notice"><%= notice %></p>
 
 <h1>Aflatoxin in Corn Oil</h1>
@@ -6,5 +15,9 @@
 </p>
 <p>
   <% step = @steps[0] %>
-  <%= button_to "Start the Game", step, method: :get %>
+  <% if player_signed_in? %>
+    <%= button_to "Start the Game", step, method: :get %>
+  <% else %>
+    Log in to start game
+  <% end %>
 </p>

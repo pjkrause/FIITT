@@ -3,11 +3,13 @@ module CurrentStatus
 
   private
 
-    def set_status
-      @status = Status.find(session[:status_id])
-    rescue
-      @status = Status.create
-      session[:status_id] = @status.id
+    def set_status(id)
+      session[:status_id] = id
     end
+
+    def get_status
+      @status = Status.find(session[:status_id])
+    end
+
 
 end
