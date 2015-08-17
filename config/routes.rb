@@ -6,8 +6,9 @@ Rails.application.routes.draw do
 
   resources :decisions
 
-  resources :steps
-  get 'next_step/:id' => 'steps#show_next'
+  # resources :steps
+  get 'start' => 'steps#start'
+  get 'next_step/:id' => 'steps#show'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

@@ -16,7 +16,7 @@
 <p>
   <% step = @steps[0] %>
   <% if player_signed_in? %>
-    <%= button_to "Start the Game", step, method: :get %>
+    <%= button_to "Start the Game", '/start/', method: :get %>
   <% else %>
     Log in to start game
   <% end %>

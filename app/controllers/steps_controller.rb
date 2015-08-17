@@ -1,8 +1,8 @@
 class StepsController < ApplicationController
   include CurrentStatus
   before_action :set_step, only: [:show, :edit, :update, :destroy]
-  before_action :get_status, only: [:show_next]
-  before_action :set_next_step, only: [:show_next]
+  before_action :get_status, only: [:show]
+  before_action :set_next_step, only: [:show]
 
 
   # GET /steps
@@ -15,14 +15,15 @@ class StepsController < ApplicationController
   # GET /steps/1.json
   # Setting up the status session variable may need to take place earlier
   # than this if we want to offer the option to restart an incomplete session
-  def show
+  def start
+    @step = Step.find(1)
     @decision_choices = @step.decisions
     @messages = @step.stakeholder_messages
     @status = Status.create(player_id: current_player.id)
     set_status(@status.id)
   end
 
-  def show_next
+  def show
     @decision_choices = @step.decisions
     @messages = @step.stakeholder_messages
     @status.day_no = @status.day_no + @decision.days
@@ -31,10 +32,10 @@ class StepsController < ApplicationController
     @status.media_perception = @status.media_perception + @decision.mp
     @status.public_perception = @status.public_perception + @decision.pp
     @status.save
-    respond_to do |format|
-      format.html { redirect_to @step }
-      format.json { render :show, location: @step }
-    end
+#    respond_to do |format|
+#      format.html { redirect_to @step }
+#      format.json { render :show, location: @step }
+#    end
   end
 
   # GET /steps/new
