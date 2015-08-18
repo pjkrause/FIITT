@@ -1,23 +1,20 @@
-<nav id="sign_in">
-  <% if player_signed_in? %>
-    Signed in as <%= current_player.email %>:
-    <%= link_to "Sign out", destroy_player_session_path, :method => :delete %>
-  <% else %>
-    <%= link_to "Sign up", new_player_registration_path %> or
-    <%= link_to "Sign in", new_player_session_path %>
-  <% end %>
-</nav>
-<p id="notice"><%= notice %></p>
+<article id="introduction">
+  <%= render 'layouts/login' %>
 
-<h1>Aflatoxin in Corn Oil</h1>
-<p>
-  Your company, Oils Unlimited, is a medium-sized enterprise importing vegetable oils, such as rapeseed, groundnut, sunflower, soybean, olive, corn and sesame, from several countries such as India, China, Sudan, Argentina and Indonesia and repackaged under your own brand names. One of your products is Corn-Oh-Lio, a brand of cooking corn oil. You supply this product to small and medium-scale food business operators in the UK and France. Your clients include individual retailers, snack food manufacturers and fast food restaurants, and at least one major retail chain in the UK called Tesland.
-</p>
-<p>
-  <% step = @steps[0] %>
-  <% if player_signed_in? %>
-    <%= button_to "Start the Game", '/start/', method: :get %>
-  <% else %>
-    Log in to start game
-  <% end %>
-</p>
+  <h1>Food Incident Interactive Training Tool</h1>
+
+  <p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vulputate libero eget finibus venenatis. Aliquam quis pulvinar leo. In hac habitasse platea dictumst. Phasellus blandit lorem nisi, non venenatis turpis ullamcorper lobortis. Sed lacus urna, lobortis ut arcu et, rhoncus consequat erat. Curabitur tincidunt nisl ut justo ullamcorper sagittis. Curabitur turpis ex, dignissim a laoreet ut, semper id ex. Donec quis interdum ipsum.
+  </p>
+  <p>
+    Cras vulputate odio eget quam mollis, nec auctor ipsum venenatis. Nam sem magna, auctor in auctor eu, vehicula et quam. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Mauris eu tortor eu ex tempus sodales sit amet et orci. Praesent volutpat mauris eu purus ullamcorper viverra. Aenean urna neque, commodo vitae eleifend et, mollis sit amet turpis. Vivamus vel rutrum nisi. Vestibulum cursus nisl sit amet augue elementum, eget finibus quam aliquam. Nulla vel ligula suscipit, lacinia est vitae, vulputate erat.
+  </p>
+
+  <nav>
+    <ul>
+      <li><%= link_to "See the Scenarios", games_path %></li>
+      <li><%= link_to "Your Personal Page", player_path %></li>
+    </ul>
+  </nav>
+</article>
+

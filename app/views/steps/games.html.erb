@@ -1,0 +1,20 @@
+<%= render 'layouts/login' %>
+
+<article>
+  <p id="notice"><%= notice %></p>
+  <% @games.each do |game| %>
+    <section>
+      <h1><%= game.title %></h1>
+      <p>
+        <%= game.description %>
+      </p>
+      <p>
+        <% if player_signed_in? %>
+          <%= button_to "Start the Game", '/start/' + game.first_step.to_s, method: :get %>
+        <% else %>
+          Log in to start game
+        <% end %>
+      </p>
+    </section>
+  <% end %>
+</article>
