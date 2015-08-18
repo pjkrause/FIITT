@@ -16,7 +16,11 @@ class StepsController < ApplicationController
   end
 
   def player
-
+    if current_player
+      @statuses = Status.where("player_id = ?", current_player.id)
+    else
+      @statuses = []
+    end
   end
 
 
