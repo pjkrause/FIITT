@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150818031924) do
+ActiveRecord::Schema.define(version: 20150818072259) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -123,9 +123,11 @@ ActiveRecord::Schema.define(version: 20150818031924) do
     t.integer  "media_perception",       default: 0
     t.integer  "public_perception",      default: 0
     t.integer  "day_no",                 default: 0
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
     t.integer  "player_id"
+    t.integer  "game_id"
+    t.integer  "trace",                  default: [],              array: true
   end
 
   create_table "steps", force: :cascade do |t|
@@ -133,6 +135,7 @@ ActiveRecord::Schema.define(version: 20150818031924) do
     t.text     "status_message"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
+    t.integer  "game_id"
   end
 
 end
