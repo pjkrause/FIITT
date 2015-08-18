@@ -8,15 +8,24 @@ class StepsController < ApplicationController
   # GET /steps
   # GET /steps.json
   def index
-    @steps = Step.all
+    
   end
+
+  def games
+    @games = Game.all
+  end
+
+  def player
+
+  end
+
 
   # GET /steps/1
   # GET /steps/1.json
   # Setting up the status session variable may need to take place earlier
   # than this if we want to offer the option to restart an incomplete session
   def start
-    @step = Step.find(1)
+    @step = Step.find(params[:id])
     @decision_choices = @step.decisions
     @messages = @step.stakeholder_messages
     @status = Status.create(player_id: current_player.id)

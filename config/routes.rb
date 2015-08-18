@@ -7,7 +7,9 @@ Rails.application.routes.draw do
   resources :decisions
 
   # resources :steps
-  get 'start' => 'steps#start'
+  get 'games' => 'steps#games'
+  get 'player' => 'steps#player'
+  get 'start/:id' => 'steps#start'
   get 'next_step/:id' => 'steps#show'
 
   # The priority is based upon order of creation: first created -> highest priority.
