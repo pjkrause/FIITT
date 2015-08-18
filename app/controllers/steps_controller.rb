@@ -28,11 +28,12 @@ class StepsController < ApplicationController
     @step = Step.find(params[:id])
     @decision_choices = @step.decisions
     @messages = @step.stakeholder_messages
-    @status = Status.create(player_id: current_player.id)
+    @status = Status.create(player_id: current_player.id, game_id: @step.game_id)
     set_status(@status.id)
   end
 
   def show
+    @status.trace += [[@decision.id, @step.id]]
     @decision_choices = @step.decisions
     @messages = @step.stakeholder_messages
     @status.day_no = @status.day_no + @decision.days
@@ -41,10 +42,6 @@ class StepsController < ApplicationController
     @status.media_perception = @status.media_perception + @decision.mp
     @status.public_perception = @status.public_perception + @decision.pp
     @status.save
-#    respond_to do |format|
-#      format.html { redirect_to @step }
-#      format.json { render :show, location: @step }
-#    end
   end
 
   # GET /steps/new
