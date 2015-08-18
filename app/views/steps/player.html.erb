@@ -1,1 +1,17 @@
-<h1>Find me in admin/views/steps/player.html.erb</h1>
+<article id='player_details'>
+  
+  <% if current_player %>
+  Welcome <%= current_player.email %>
+  <ul>
+    You have played the following games
+    <% @statuses.each do |status| %>
+      <li><%= Game.find(status.game_id).title %>, with trace <%= status.trace %></li>
+    <% end %>
+  </ul>
+  <% else %>
+    Log in to see your player details
+  <% end %>
+  
+    
+  
+</article>
