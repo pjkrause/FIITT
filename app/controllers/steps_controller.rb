@@ -1,8 +1,8 @@
 class StepsController < ApplicationController
   include CurrentStatus
-  before_action :set_step, only: [:show, :edit, :update, :destroy]
-  before_action :get_status, only: [:show]
-  before_action :set_next_step, only: [:show]
+  # before_action :set_step, only: [:show, :edit, :update, :destroy]
+  before_action :get_status, only: [:show, :end_game]
+  before_action :set_next_step, only: [:show, :end_game]
 
 
   # GET /steps
@@ -37,8 +37,23 @@ class StepsController < ApplicationController
   end
 
   def show
-    @status.trace += [[@decision.id, @step.id]]
     @decision_choices = @step.decisions
+    if @decision_choices == []
+      redirect_to action: "end_game"
+    else
+      @status.trace += [[@decision.id, @step.id]]
+      @messages = @step.stakeholder_messages
+      @status.day_no = @status.day_no + @decision.days
+      @status.external_communication = @status.external_communication + @decision.ec
+      @status.internal_communication = @status.internal_communication + @decision.ic
+      @status.media_perception = @status.media_perception + @decision.mp
+      @status.public_perception = @status.public_perception + @decision.pp
+      @status.save
+    end
+  end
+
+  def end_game
+    @status.trace += [[@decision.id, @step.id]]
     @messages = @step.stakeholder_messages
     @status.day_no = @status.day_no + @decision.days
     @status.external_communication = @status.external_communication + @decision.ec
@@ -47,6 +62,7 @@ class StepsController < ApplicationController
     @status.public_perception = @status.public_perception + @decision.pp
     @status.save
   end
+
 
   # GET /steps/new
   def new

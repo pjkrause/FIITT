@@ -1,0 +1,31 @@
+  <section class="left_element">
+    <h1>USER DASHBOARD</h1>
+    <h2>DAY: <%= @status.day_no %></h2>
+    <ul>
+      <li>External Communication: <%= @status.external_communication %></li>
+      <li>Internal Communication: <%= @status.internal_communication %></li>
+      <li>Media Perception: <%= @status.media_perception %></li>
+      <li>Public Perception: <%= @status.public_perception %></li>
+    </ul>
+     
+    <p>
+      <h2>SCENARIO STATUS</h2>
+      <%= @step.status_message %>
+    </p>
+  </section>
+  <section class="left_element">
+    <h1>ACTION BOX</h1>
+      <h2>Game Over!</h2>
+  </section>
+
+  <section class="right_element">
+    <h1>Messages</h1>
+    <% if @messages %>     
+        <% for message in @messages %>
+        <h2><%= message.source %></h2>
+        <p><%= message.message %></p>
+        <% end %>
+    <% end %>
+
+  </section>
+
