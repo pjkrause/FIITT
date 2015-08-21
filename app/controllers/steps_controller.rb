@@ -61,6 +61,17 @@ class StepsController < ApplicationController
     @status.media_perception = @status.media_perception + @decision.mp
     @status.public_perception = @status.public_perception + @decision.pp
     @status.save
+    respond_to do |format|
+      format.html
+      format.pdf do
+        pdf = Prawn::Document.new
+        pdf.text "Hello Paul"
+        send_data pdf.render, filename: "fiitt_report.pdf",
+                              type: "application/pdf",
+                              disposition: "inline"
+      end
+    end
+
   end
 
 
