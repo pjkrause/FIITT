@@ -1,7 +1,8 @@
+<article id="game_summary">
   <section class="left_element">
-    <h1>USER DASHBOARD</h1>
-    <h2>DAY: <%= @status.day_no %></h2>
+    <h1>Summary of your run</h1>
     <ul>
+      <li>You completed the scenario in <%= @status.day_no %> days</li>
       <li>External Communication: <%= @status.external_communication %></li>
       <li>Internal Communication: <%= @status.internal_communication %></li>
       <li>Media Perception: <%= @status.media_perception %></li>
@@ -18,14 +19,12 @@
       <h2>Game Over!</h2>
   </section>
 
-  <section class="right_element">
-    <h1>Messages</h1>
-    <% if @messages %>     
-        <% for message in @messages %>
-        <h2><%= message.source %></h2>
-        <p><%= message.message %></p>
-        <% end %>
-    <% end %>
+  <nav>
+    <ul>
+      <li><%= link_to "Go back to the Scenarios", games_path %></li>
+      <li><%= link_to "Review Your Personal Page", player_path %></li>
+    </ul>
+  </nav>
 
-  </section>
+</article>
 
