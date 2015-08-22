@@ -31,8 +31,9 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 gem "devise"
 gem 'activeadmin', github: 'activeadmin'
 
-# Use Prawn and PrawnTo for pdf report generation
+# Use Prawn for pdf report generation
   gem 'prawn', '~> 2.0.2'
+  gem 'prawn-table'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
