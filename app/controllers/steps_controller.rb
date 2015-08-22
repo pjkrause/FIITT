@@ -64,8 +64,7 @@ class StepsController < ApplicationController
     respond_to do |format|
       format.html
       format.pdf do
-        pdf = Prawn::Document.new
-        pdf.text "Hello Paul"
+        pdf = ReportPdf.new(@status)
         send_data pdf.render, filename: "fiitt_report.pdf",
                               type: "application/pdf",
                               disposition: "inline"
