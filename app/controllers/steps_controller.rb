@@ -65,7 +65,7 @@ class StepsController < ApplicationController
       format.html
       format.pdf do
         pdf = ReportPdf.new(@status)
-        send_data pdf.render, filename: "fiitt_report.pdf",
+        send_data pdf.render, filename: "fiitt_report#{@status.updated_at}.pdf",
                               type: "application/pdf",
                               disposition: "inline"
       end

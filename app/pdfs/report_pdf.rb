@@ -19,7 +19,7 @@ class ReportPdf < Prawn::Document
   end
 
   def report_author_date
-    text "For Player: #{Player.find(@status.player_id).email}, with simulation completed at #{@status.updated_at}"
+    text "For Player: #{Player.find(@status.player_id).email}. Simulation completed at #{@status.updated_at}"
   end
 
   def indicator_data
