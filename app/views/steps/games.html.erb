@@ -10,9 +10,9 @@
       </p>
       <p>
         <% if player_signed_in? %>
-          <%= button_to "Start the Game", '/start/' + game.first_step.to_s, method: :get %>
+          <%= button_to "Start the Scenario", '/start/' + game.first_step.to_s, method: :get %>
         <% else %>
-          Log in to start game
+          Log in to start a scenario
         <% end %>
       </p>
     </section>
