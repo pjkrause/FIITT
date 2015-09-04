@@ -5,7 +5,7 @@ class ReportPdf < Prawn::Document
     @status = status
     report_title
     move_down 20
-    report_author_date
+    report_author_and_date
     move_down 10
     t = make_table(indicator_data, header: :true, :column_widths => [200, 100]) do
       row(0).font_style = :bold
@@ -18,7 +18,7 @@ class ReportPdf < Prawn::Document
     text "SIMULATION REPORT: #{Game.find(@status.game_id).title}", size: 15, style: :bold, align: :center
   end
 
-  def report_author_date
+  def report_author_and_date
     text "For Player: #{Player.find(@status.player_id).email}. Simulation completed at #{@status.updated_at}"
   end
 

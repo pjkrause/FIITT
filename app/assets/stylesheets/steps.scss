@@ -5,18 +5,17 @@
 body {
     background: #fafafa;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    color: #333;
 }
 
 footer {
     clear: left;
 }
+
 .base-unit {
     margin: 5px auto 0 auto;
     width: 1000px;
     min-height: 500px;
     font-size: 15px;
-    font-weight: 200;
     line-height: 20px;
     background-color: #aab;
     cborder-radius: 6px;
@@ -25,7 +24,7 @@ footer {
   h1 {
     font-size: 20px;
     line-height: 1;
-    letter-spacing: -1px;
+    text-align: center;
   }
 
   h2 {
@@ -35,13 +34,13 @@ footer {
 
 .base-unit 
 
-.left_element {
+.right_element {
+    margin-left: 585px;
     margin-top: 10px;
     text-align: center;
-    float: left;
-    clear: left;
-    width: 450px;
+    width: 400px;
     background-color: #ccd;
+    min-height: 200px;
     border-radius: 50px;
     ul {
         text-align: left;
@@ -51,21 +50,35 @@ footer {
     }
 }
 
-.right_element {
-    margin-left: 480px;
+.left_element {
     width: 565px;
+    margin-top: 10px;
+    float: left;
     background-color: #fff;
     min-height: 200px;
     padding-top: 2px;
+    h1 {
+      text-align: center;
+      font-size: 18px;
+      background-color: #a40;
+      padding: 5px;
+      margin: 2px;
+    }
 }
 
-.right_element h1 {
-    text-align: center;
-    font-size: 18px;
-    background-color: #a40;
-    padding: 5px;
-    margin: 2px;
-    color: #eee;
+#status {
+    border: outset;
+    border-color: #4a0;
+    padding: 10px;
+    background-color: #fff;
+}
+
+#dashboard {
+    clear: left;
+    padding-top: 5px;
+    padding-bottom: 10px;
+    border: solid;
+    border-color: #a40;
 }
 
 #game_summary {
