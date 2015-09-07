@@ -1,3 +1,4 @@
+<%= render 'layouts/header' %>
 <%= render 'layouts/login' %>
 
 <article>
@@ -17,7 +18,7 @@
       </p>
     </section>
   <% end %>
-  <nav>
+  <nav class="basic-navigation">
     <ul>
       <li><%= link_to "Home Page", root_path %></li>
       <li><%= link_to "Your Personal Page", player_path %></li>
