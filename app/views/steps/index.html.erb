@@ -1,16 +1,23 @@
+<header>
+  <%= image_tag("logo.png" ) %>
+  <h1>ERIE: Evolution and Resilience of Industrial Ecosystems</h1>
+</header>
 <article id="introduction">
   <%= render 'layouts/login' %>
 
   <h1>Food Incident Interactive Training Tool</h1>
 
   <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vulputate libero eget finibus venenatis. Aliquam quis pulvinar leo. In hac habitasse platea dictumst. Phasellus blandit lorem nisi, non venenatis turpis ullamcorper lobortis. Sed lacus urna, lobortis ut arcu et, rhoncus consequat erat. Curabitur tincidunt nisl ut justo ullamcorper sagittis. Curabitur turpis ex, dignissim a laoreet ut, semper id ex. Donec quis interdum ipsum.
+    Welcome to the Food Incident Interactive Training Tool (FIITT). The FIITT aims to build the foundation for effective management of food incidents among food business organisations. Users of this tool will be immersed in simulations of different food incident scenarios. At certain points of a simulation the user will be asked to make a choice among several decision options based on the information that is made available; these information are delivered as messages.
   </p>
+  
   <p>
-    Cras vulputate odio eget quam mollis, nec auctor ipsum venenatis. Nam sem magna, auctor in auctor eu, vehicula et quam. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Mauris eu tortor eu ex tempus sodales sit amet et orci. Praesent volutpat mauris eu purus ullamcorper viverra. Aenean urna neque, commodo vitae eleifend et, mollis sit amet turpis. Vivamus vel rutrum nisi. Vestibulum cursus nisl sit amet augue elementum, eget finibus quam aliquam. Nulla vel ligula suscipit, lacinia est vitae, vulputate erat.
+    For this workshop, we invite you to explore a food incident scenario that involves aflatoxin contamination in a commercial food product. Particularly, we would like to ask you to examine the different elements of the simulation tool, namely, the story line of the scenario (if they are plausible, believable and convincing), the kind of information that is presented and the way they are presented (are they useful and engaging), and the decision options (if they make sense or are logical). In general, we would like you to identify the elements of the tool that works well, as well as those that are ineffective, and perhaps suggest how we can further improve the tool to make it more effective and fit-for-purpose.
   </p>
 
-  <nav>
+
+
+  <nav class="basic-navigation">
     <ul>
       <li><%= link_to "See the Scenarios", games_path %></li>
       <li><%= link_to "Your Personal Page", player_path %></li>
