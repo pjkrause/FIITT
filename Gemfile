@@ -35,6 +35,9 @@ gem 'activeadmin', github: 'activeadmin'
   gem 'prawn', '~> 2.0.2'
   gem 'prawn-table'
 
+# Carrierwave and MiniMagic for media files
+  gem 'carrierwave'
+  
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 

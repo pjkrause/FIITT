@@ -3,7 +3,17 @@ ActiveAdmin.register StakeholderMessage do
 # See permitted parameters documentation:
 # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
 #
-  permit_params :step_id, :source, :message
+  permit_params :step_id, :source, :message, :media
+
+  form :html => { :enctype => "multipart/form-data" } do |f|
+    f.inputs "StakeholderMessage", :multipart => true do
+      f.input :step_id
+      f.input :source
+      f.input :message
+      f.input :media
+    end
+    f.actions
+  end
 #
 # or
 #

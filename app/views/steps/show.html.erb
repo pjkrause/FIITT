@@ -10,8 +10,12 @@
     <h1>Messages</h1>
     <% if @messages %>     
         <% for message in @messages %>
-        <h2><%= message.source %></h2>
-        <p><%= message.message %></p>
+          <h2><%= message.source %></h2>
+          <% if message.media.to_s.empty? %>
+            <p><%= message.message %></p>
+          <% else %>
+            <%= image_tag(message.media_url) %>
+          <% end %>
         <% end %>
     <% end %>
 
