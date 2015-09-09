@@ -11,10 +11,15 @@
     <% if @messages %>     
         <% for message in @messages %>
           <h2><%= message.source %></h2>
-          <% if message.media.to_s.empty? %>
-            <p><%= message.message %></p>
+          <% if message.video.to_s.empty? %>
+            <% if message.media.to_s.empty? %>
+              <p><%= message.message %></p>
+            <% else %>
+              <%= image_tag(message.media_url) %>
+            <% end %>
           <% else %>
-            <%= image_tag(message.media_url) %>
+            <%= video_tag message.video_url, :controls => true, :autobuffer => true %>
+            
           <% end %>
         <% end %>
     <% end %>

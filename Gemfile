@@ -37,7 +37,7 @@ gem 'activeadmin', github: 'activeadmin'
 
 # Carrierwave and MiniMagic for media files
   gem 'carrierwave'
-  
+  gem 'carrierwave-video'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
