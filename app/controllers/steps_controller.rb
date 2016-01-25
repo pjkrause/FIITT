@@ -44,10 +44,10 @@ class StepsController < ApplicationController
       @status.trace += [[@decision.id, @step.id]]
       @messages = @step.stakeholder_messages
       @status.day_no = @status.day_no + @decision.days
-      @status.external_communication = @status.external_communication + @decision.ec
-      @status.internal_communication = @status.internal_communication + @decision.ic
-      @status.media_perception = @status.media_perception + @decision.mp
-      @status.public_perception = @status.public_perception + @decision.pp
+#      @status.external_communication = @status.external_communication + @decision.ec
+#      @status.internal_communication = @status.internal_communication + @decision.ic
+#      @status.media_perception = @status.media_perception + @decision.mp
+#      @status.public_perception = @status.public_perception + @decision.pp
       @status.save
     end
   end
@@ -56,10 +56,10 @@ class StepsController < ApplicationController
     @status.trace += [[@decision.id, @step.id]]
     @messages = @step.stakeholder_messages
     @status.day_no = @status.day_no + @decision.days
-    @status.external_communication = @status.external_communication + @decision.ec
-    @status.internal_communication = @status.internal_communication + @decision.ic
-    @status.media_perception = @status.media_perception + @decision.mp
-    @status.public_perception = @status.public_perception + @decision.pp
+#    @status.external_communication = @status.external_communication + @decision.ec
+#    @status.internal_communication = @status.internal_communication + @decision.ic
+#    @status.media_perception = @status.media_perception + @decision.mp
+#    @status.public_perception = @status.public_perception + @decision.pp
     @status.save
     respond_to do |format|
       format.html
