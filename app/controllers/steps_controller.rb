@@ -43,7 +43,7 @@ class StepsController < ApplicationController
     else
       @status.trace += [[@decision.id, @step.id]]
       @messages = @step.stakeholder_messages
-      @status.day_no = @status.day_no + @decision.days
+#      @status.day_no = @status.day_no + @decision.days
 #      @status.external_communication = @status.external_communication + @decision.ec
 #      @status.internal_communication = @status.internal_communication + @decision.ic
 #      @status.media_perception = @status.media_perception + @decision.mp
@@ -55,7 +55,7 @@ class StepsController < ApplicationController
   def end_game
     @status.trace += [[@decision.id, @step.id]]
     @messages = @step.stakeholder_messages
-    @status.day_no = @status.day_no + @decision.days
+#    @status.day_no = @status.day_no + @decision.days
 #    @status.external_communication = @status.external_communication + @decision.ec
 #    @status.internal_communication = @status.internal_communication + @decision.ic
 #    @status.media_perception = @status.media_perception + @decision.mp
