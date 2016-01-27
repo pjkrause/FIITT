@@ -41,6 +41,7 @@ class StepsController < ApplicationController
     if @decision_choices == []
       redirect_to action: "end_game"
     else
+    #  @choices = Choices.new
       @status.trace += [[@decision.id, @step.id]]
       @messages = @step.stakeholder_messages
 #      @status.day_no = @status.day_no + @decision.days
@@ -130,12 +131,15 @@ class StepsController < ApplicationController
     end
 
     def set_next_step   
-      @decision = Decision.find(params[:id])       
+    #  @decision = Decision.find(params[:id]) 
+      @choices = params[:choices] 
+      @decision = Decision.find(@choices["choice_ids"][0])     
       @step = Step.find(@decision.next_step)
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def step_params
       params.require(:step).permit(:general_message, :status_message)
+      params.require(:choices).permit(choice_ids: [])
     end
 end

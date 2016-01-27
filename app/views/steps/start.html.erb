@@ -14,10 +14,7 @@
           <% if message.media.to_s.empty? %>
             <p><%= message.message %></p>
           <% else %>
-          <video>
-            <%= image_tag(message.media_url) %>
-          </video>
-            
+            <%= image_tag(message.media_url) %>           
           <% end %>
         <% end %>
     <% end %>
@@ -28,12 +25,19 @@
     <% if @decision_choices %>
       <h2>Decision Choices</h2>
       <% if @decision_choices != [] %>
-      <ul>
+        <% @choices = Choices.new %>
+        <%= form_tag( next_step_path, method: :get ) do %>
+          <%= collection_check_boxes(:choices, :choice_ids, @decision_choices, :id, :choice) %>
+          <%= submit_tag "Go" %>
+        <% end %>
+
+<!--      <ul>
         <% for decision in @decision_choices %>
         <% id = decision.id.to_s %>
         <li><%= decision.choice %> <%= button_to "Select", '/next_step/' + decision.id.to_s, method: :get %></li>
         <% end %>
       </ul>
+-->
       <% else %>
       <h2>Game Over!</h2>
       <% end %>

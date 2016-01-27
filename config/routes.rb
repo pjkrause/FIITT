@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   get 'games' => 'steps#games'
   get 'player' => 'steps#player'
   get 'start/:id' => 'steps#start'
-  get 'next_step/:id' => 'steps#show'
+  get 'next_step/:id' => 'steps#show', as: :next_step
   get 'end_game/:id' => 'steps#end_game', as: :end_game
 
   # The priority is based upon order of creation: first created -> highest priority.
