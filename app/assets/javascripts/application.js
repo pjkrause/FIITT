@@ -15,3 +15,18 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require_tree .
+
+$(function() {
+  $(":submit").prop('disabled', true);
+  $(":checkbox").change(function(e) {
+      var checkbox_elements = $(":checkbox");
+      var is_invalid = true;
+      for (var i = 0; i < checkbox_elements.length; i++ ) {
+        if (checkbox_elements[i].checked==true) {
+          is_invalid = false;
+        }
+      }
+      $(":submit").prop('disabled', is_invalid);
+    });
+})
+
