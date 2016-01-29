@@ -11,10 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150909085925) do
+ActiveRecord::Schema.define(version: 20160127144236) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_stat_statements"
+  enable_extension "hstore"
 
   create_table "active_admin_comments", force: :cascade do |t|
     t.string   "namespace"
@@ -135,9 +137,10 @@ ActiveRecord::Schema.define(version: 20150909085925) do
   create_table "steps", force: :cascade do |t|
     t.text     "general_message"
     t.text     "status_message"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
     t.integer  "game_id"
+    t.hstore   "decision_table",  default: {}, null: false
   end
 
 end
