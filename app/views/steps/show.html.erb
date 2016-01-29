@@ -33,6 +33,7 @@
         <% @choices = Choices.new %>
         <%= form_tag( next_step_path, method: :get ) do %>
           <%= collection_check_boxes(:choices, :choice_ids, @decision_choices, :id, :choice) %>
+          <input type="hidden" name="current_step" value=<%= @step.id %> >
           <%= submit_tag "Go" %>
         <% end %>
     <!--
