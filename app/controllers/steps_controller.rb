@@ -42,7 +42,7 @@ class StepsController < ApplicationController
       redirect_to action: "end_game"
     else
     #  @choices = Choices.new
-      @status.trace += [[@decision_choices, @step.id]]
+      @status.trace += [[@decision_choices, @step.id]] # I think this should be current_step
       @messages = @step.stakeholder_messages
 #      @status.day_no = @status.day_no + @decision.days
 #      @status.external_communication = @status.external_communication + @decision.ec
@@ -54,7 +54,7 @@ class StepsController < ApplicationController
   end
 
   def end_game
-    @status.trace += [[@decision.id, @step.id]]
+    @status.trace += [[@choices, @step.id]]
     @messages = @step.stakeholder_messages
 #    @status.day_no = @status.day_no + @decision.days
 #    @status.external_communication = @status.external_communication + @decision.ec
@@ -132,15 +132,15 @@ class StepsController < ApplicationController
 
     def set_next_step   
     #  @decision = Decision.find(params[:id]) 
-      choices = params[:choices]["choice_ids"]
-      puts "Choices: #{choices}"
-      puts "First element: #{choices[0]}"
-      key = choices.map{|i| i.to_i}
+      @choices = params[:choices]["choice_ids"]
+      key = @choices.map{|i| i.to_i}
       current_step = Step.find(params[:current_step])
-      puts "Decision Table: #{current_step.decision_table}"
-      next_step_id = current_step.decision_table[String(key)].to_i
-      # @decision = Decision.find(@choices[0])     
-      @step = Step.find(next_step_id)
+      if current_step.default_step
+        @step = Step.find(current_step.default_step)
+      else
+        next_step_id = current_step.decision_table[String(key)].to_i
+        @step = Step.find(next_step_id)
+      end
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
