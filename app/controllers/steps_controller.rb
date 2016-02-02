@@ -135,11 +135,11 @@ class StepsController < ApplicationController
       @choices = params[:choices]["choice_ids"]
       key = @choices.map{|i| i.to_i}
       current_step = Step.find(params[:current_step])
-      if current_step.default_step
-        @step = Step.find(current_step.default_step)
-      else
-        next_step_id = current_step.decision_table[String(key)].to_i
+      next_step_id = current_step.decision_table[String(key)].to_i
+      if next_step_id != 0
         @step = Step.find(next_step_id)
+      else
+        @step = Step.find(current_step.default_step)
       end
     end
 
