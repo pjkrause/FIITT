@@ -3,7 +3,7 @@ ActiveAdmin.register Step do
 # See permitted parameters documentation:
 # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
 #
-  permit_params :general_message, :decision_table, :status_message, :guidance, :game_id
+  permit_params :general_message, :decision_table, :status_message, :default_step, :guidance, :game_id
   sidebar "Step Details", only: [:show, :edit] do
     ul do
       li link_to("Decision Choices", admin_step_decisions_path(step))
