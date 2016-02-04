@@ -2,7 +2,7 @@ class StepsController < ApplicationController
   include CurrentStatus
   # before_action :set_step, only: [:show, :edit, :update, :destroy]
   before_action :get_status, only: [:show, :end_game]
-  before_action :set_next_step, only: [:show, :end_game]
+  before_action :set_next_step, only: [:show] #, :end_game]
 
 
   # GET /steps
@@ -39,7 +39,7 @@ class StepsController < ApplicationController
   def show
     @decision_choices = @step.decisions
     if @decision_choices == []
-      redirect_to action: "end_game"
+      redirect_to action: "end_game", id: @step
     else
     #  @choices = Choices.new
       @status.trace += [[@decision_choices, @step.id]] # I think this should be current_step
@@ -54,7 +54,8 @@ class StepsController < ApplicationController
   end
 
   def end_game
-    @status.trace += [[@choices, @step.id]]
+    @step = Step.find(params[:id])
+    @status.trace += [[@decision_choices, @step.id]]
     @messages = @step.stakeholder_messages
 #    @status.day_no = @status.day_no + @decision.days
 #    @status.external_communication = @status.external_communication + @decision.ec
