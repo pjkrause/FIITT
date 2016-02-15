@@ -33,7 +33,7 @@ header {
     min-height: 500px;
     font-size: 15px;
     line-height: 20px;
-    background-color: #aab;
+    background-color: #fff;
     cborder-radius: 6px;
     padding: 60px;
 
@@ -46,6 +46,29 @@ header {
   h2 {
     font-size: 17px;
   }
+}
+
+
+.introductory-material {
+    background-image: url("FIITT_Background_2.png");
+    background-size: 100%;
+    min-height: 580px;
+    text-align: center;
+    h1 {
+        max-width: 550px;
+        font-size: 40px;
+        margin: 100px auto 0 auto;
+    }
+
+    h2 {
+       max-width: 550px; 
+       margin: 20px auto 0 auto;
+    }
+
+    p {
+        max-width: 550px;
+        margin: 10px auto 0 auto;
+    }
 }
 
 
