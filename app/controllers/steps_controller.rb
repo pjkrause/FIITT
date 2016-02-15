@@ -11,6 +11,10 @@ class StepsController < ApplicationController
     
   end
 
+  def about
+
+  end
+
   def games
     @games = Game.all
   end

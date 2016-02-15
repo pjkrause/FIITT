@@ -8,6 +8,7 @@ Rails.application.routes.draw do
 
   # resources :steps
   get 'games' => 'steps#games'
+  get 'about' => 'steps#about'
   get 'player' => 'steps#player'
   get 'start/:id' => 'steps#start'
   get 'next_step/:id' => 'steps#show', as: :next_step
