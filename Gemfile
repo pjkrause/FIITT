@@ -5,7 +5,8 @@ ruby '2.1.2'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.0'
 
-gem 'thin'
+gem "passenger", ">= 5.0.25", require: "phusion_passenger/rack_handler"
+# gem 'thin'
 
 # Use pg as the database for Active Record
 gem 'rails_12factor'
