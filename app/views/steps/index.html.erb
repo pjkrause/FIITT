@@ -1,16 +1,32 @@
 <article id="introduction", class="introductory-material">
-  <%= render 'layouts/login' %>
+    <!--<%= render 'layouts/login' %>-->
 
-  <h1>Food Incident <br> Interactive Training Tool</h1>
+    <h1 class="title">Food Incident <br> Interactive Training Tool</h1>
 
+    <div class="menu_content">
+        <% if player_signed_in? %>
 
+            <%= link_to "Start new session", games_path, class: "button gray rounded big" %>
+            <%= link_to "Load saved session", root_path, class: "button gray rounded big" %>
+            <%= link_to "User information", player_path, class: "button gray rounded big" %>
 
+        <% else %>
 
-  <nav class="basic-navigation">
-    <ul>
-      <li><%= link_to "About", about_path %></li>
-      <li><%= link_to "See the Scenarios", games_path %></li>
-      <li><%= link_to "Your Personal Page", player_path %></li>
-    </ul>
-  </nav>
+            <%= link_to "Sign in", new_player_session_path, class: "button gray rounded big" %>
+
+        <% end %>
+
+        <%= link_to "About", about_path, class: "button gray rounded big" %>
+        <%= link_to "FAQs", root_path, class: "button gray rounded big" %>
+        <%= link_to "Resources", root_path, class: "button gray rounded big" %>
+        <%= link_to "Credits", root_path, class: "button gray rounded big" %>
+
+        <% if player_signed_in? %>
+            <%= link_to "Sign out", destroy_player_session_path, class: "button gray rounded big", :method => :delete %>
+        <% end %>
+
+    </div>
+
+    <div class="erie_logo"></div>
+    <div class="surrey_logo"></div>
 </article>
