@@ -1,11 +1,11 @@
 source 'https://rubygems.org'
 
-ruby '2.1.2'
+ruby '2.1.5'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.0'
 
-gem "passenger", ">= 5.0.25", require: "phusion_passenger/rack_handler"
+#gem "passenger", ">= 5.0.25", require: "phusion_passenger/rack_handler"
 # gem 'thin'
 
 # Use pg as the database for Active Record
