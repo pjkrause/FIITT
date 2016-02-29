@@ -1,0 +1,26 @@
+<article class="login-material">
+    <h2 class = "shadowed title">Forgot your password?</h2>
+
+    <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
+    <%= devise_error_messages! %>
+
+    <div class="field">
+        <%= f.label :email, class: "shadowed" %><br />
+        <%= f.email_field :email, autofocus: true %>
+    </div>
+
+    <div class="actions">
+        <%= f.submit "Send me reset password instructions", class: "button gray rounded" %>
+    </div>
+    <% end %>
+
+    <h2 class = "shadowed", style= "padding: 60px 0px 0px 0px;">Remember your password?</h2>
+
+    <%= render "players/shared/links" %>
+
+    <div style="height: 185px; width 100%;"></div>
+    <%= link_to "Home", root_path, class: "button gray rounded medium home" %>
+
+    <div class="erie_logo"></div>
+    <div class="surrey_logo"></div>
+</article>

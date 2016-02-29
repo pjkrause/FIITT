@@ -1,27 +1,37 @@
-<%= render 'layouts/header' %>
-<%= render 'layouts/login' %>
+<!--<%= render 'layouts/header' %>
+<%= render 'layouts/login' %>-->
 
-<article>
-  <p id="notice"><%= notice %></p>
-  <% @games.each do |game| %>
-    <section>
-      <h1><%= game.title %></h1>
-      <p>
-        <%= game.description %>
-      </p>
-      <p>
-        <% if player_signed_in? %>
-          <%= button_to "Start the Scenario", '/start/' + game.first_step.to_s, method: :get %>
-        <% else %>
-          Log in to start a scenario
+<article class="games_content">
+    <!--<p id="notice"><%= notice %></p>-->
+    <h2 class = "shadowed title">Please select an incident scenario</h2>
+
+    <div class="games_scenarios">
+        <!-- TEMPORARY PICTURE VARIABLE -->
+        <%count = 0 %>
+        <% @games.each do |game| %>
+        <%count = count+1 %>
+        <div class="game_tile_border">
+            <section class="game_tile pic<%=count.to_s%>">
+
+                <!--<h1><%= game.title %></h1>
+                <p>
+                <%= game.description %>
+                </p>-->
+                <p>
+                    <% if player_signed_in? %>
+                    <%= button_to "Start the Scenario", '/start/' + game.first_step.to_s, method: :get, class: "game_tile_button" %>
+                    <% else %>
+                    Log in to start a scenario
+                    <% end %>
+                </p>
+            </section>
+        </div>
         <% end %>
-      </p>
-    </section>
-  <% end %>
-  <nav class="basic-navigation">
-    <ul>
-      <li><%= link_to "Home Page", root_path %></li>
-      <li><%= link_to "Your Personal Page", player_path %></li>
-    </ul>
-  </nav>
+
+    </div>
+
+    <%= link_to "Home", root_path, class: "button gray rounded medium" %>
+
+    <div class="erie_logo"></div>
+    <div class="surrey_logo"></div>
 </article>
