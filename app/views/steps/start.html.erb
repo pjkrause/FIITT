@@ -1,48 +1,56 @@
-  <section id="status">
+<section class="head">
+    <div class="day_count">Day: <%=@status.day_no%></div>
+    <div class="save_icon"></div>
+</section>
+
+<section class="status">
     <h1>SCENARIO STATUS</h1>
-  <!--  <h2>DAY: <%= @status.day_no %></h2> -->
-    <p>
-      <%= @step.status_message %>
-    </p>
-  </section>
+    <hr/>
+    <div class="status_text"><%= @step.status_message %></div>
+</section>
 
-  <section class="left_element">
-    <h1>Messages</h1>
-    <% if @messages %>     
-        <% for message in @messages %>
-          <h2><%= message.source %></h2>
-          <% if message.media.to_s.empty? %>
-            <p><%= message.message %></p>
-          <% else %>
-            <%= image_tag(message.media_url) %>           
-          <% end %>
+<section class="main">
+    <div class="message_centre">
+        <h1>MESSAGE CENTRE</h1>
+        <hr/>
+        <% if @messages %>
+            <% for message in @messages %>
+                <h2 class="message_text"><%= message.source %></h2>
+                <% if message.media.to_s.empty? %>
+                    <p class="message_text"><%= message.message %></p>
+                <% else %>
+                    <%= image_tag(message.media_url) %>
+                <% end %>
+            <% end %>
         <% end %>
-    <% end %>
-  </section>
+    </div>
 
-  <section class="right_element">
-    <h1>ACTION BOX</h1>
-    <% if @decision_choices %>
-      <h2>Decision Choices</h2>
-      <% if @decision_choices != [] %>
-        <% @choices = Choices.new %>
-        <% if @decision_choices.length == 1 %>
-          Click box to confirm you have read the page and then "Go"
-        <% else %>
-          Check one or more boxes and then "Go"
+    <div class="action_box action_text">
+        <h1>ACTION BOX</h1>
+        <hr/>
+        <% if @decision_choices %>
+            <h2 class="action_text">Decision Choices</h2>
+            <% if @decision_choices != [] %>
+                <% @choices = Choices.new %>
+                <% if @decision_choices.length == 1 %>
+                    Click box to confirm you have read the page and then "Go"
+                <% else %>
+                    Check one or more boxes and then "Go"
+                <% end %>
+                <%= form_tag( next_step_path, method: :get ) do %>
+                    <%= collection_check_boxes(:choices, :choice_ids, @decision_choices, :id, :choice) do |b| %>
+                        <%= b.label { b.check_box + b.text } %>
+                        <br/>
+                    <% end %>
+                    <input type="hidden" name="current_step" value=<%= @step.id %> >
+                    <%= submit_tag "Go" %>
+                <% end %>
+            <% else %>
+                <h2 class="action_text">Game Over!</h2>
+            <% end %>
         <% end %>
-        <%= form_tag( next_step_path, method: :get ) do %>
-          <%= collection_check_boxes(:choices, :choice_ids, @decision_choices, :id, :choice) do |b| %>
-            <%= b.label { b.check_box + b.text } %>
-          <% end %>
-          <input type="hidden" name="current_step" value=<%= @step.id %> >
-          <%= submit_tag "Go" %>
-        <% end %>
-      <% else %>
-      <h2>Game Over!</h2>
-      <% end %>
-    <% end %>
-  </section>
+    </div>
+</section>
 
 <!--
   <section id="dashboard">

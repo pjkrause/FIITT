@@ -17,7 +17,7 @@
 //= require_tree .
 
 $(function() {
-  $(":submit").prop('disabled', true);
+//   $(":submit").prop('disabled', true);
   $(":checkbox").change(function(e) {
       var checkbox_elements = $(":checkbox");
       var is_invalid = true;

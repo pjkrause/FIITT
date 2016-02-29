@@ -1,0 +1,39 @@
+<article class="login-material">
+    <h2 class = "shadowed title">Sign up</h2>
+
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+    <%= devise_error_messages! %>
+
+    <div class="field">
+        <%= f.label :email, class: "shadowed" %><br />
+        <%= f.email_field :email, autofocus: true %>
+    </div>
+
+    <div class="field">
+        <%= f.label :password, class: "shadowed" %>
+        <% if @validatable %>
+        <em class= "shadowed">(<%= @minimum_password_length %> characters minimum)</em>
+        <% end %><br />
+        <%= f.password_field :password, autocomplete: "off" %>
+    </div>
+
+    <div class="field">
+        <%= f.label :password_confirmation, class: "shadowed" %><br />
+        <%= f.password_field :password_confirmation, autocomplete: "off" %>
+    </div>
+
+    <div class="actions">
+        <%= f.submit "Sign up", class: "button gray rounded" %>
+    </div>
+    <% end %>
+
+    <h2 class = "shadowed">Already have an account?</h2>
+
+    <%= render "players/shared/links" %>
+
+    <div style="height: 119px; width 100%;"></div>
+    <%= link_to "Home", root_path, class: "button gray rounded medium home" %>
+
+    <div class="erie_logo"></div>
+    <div class="surrey_logo"></div>
+</article>

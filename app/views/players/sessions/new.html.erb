@@ -1,0 +1,38 @@
+<article class="login-material">
+    <h2 class = "shadowed title">Log-in</h2>
+    <!--<h1>TEST</h1>-->
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+    <div class="field">
+        <%= f.label :email, class: "shadowed"%><br />
+        <%= f.email_field :email, autofocus: true %>
+    </div>
+
+    <div class="field">
+        <%= f.label :password, class: "shadowed"%><br />
+        <%= f.password_field :password, autocomplete: "off" %>
+    </div>
+
+    <% if devise_mapping.rememberable? -%>
+    <div class="field">
+        <%= f.check_box :remember_me %>
+        <%= f.label :remember_me, class: "shadowed"%>
+    </div>
+    <% end -%>
+    <%= f.submit "Log in", class: "button gray rounded" %>
+
+    <% end %>
+
+    <%= render "players/shared/links" %>
+
+    <h2 class = "shadowed">New-user?</h2>
+
+    <%- if devise_mapping.registerable? && controller_name != 'registrations' %>
+  <%= link_to "Sign up", new_registration_path(resource_name), class: "button gray rounded medium" %><br />
+    <% end -%>
+
+    <div style="height: 90px; width 100%;"></div>
+    <%= link_to "Home", root_path, class: "button gray rounded medium home" %>
+
+    <div class="erie_logo"></div>
+    <div class="surrey_logo"></div>
+</article>
