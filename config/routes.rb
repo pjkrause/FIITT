@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'home/home'
+
   devise_for :players
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
@@ -18,7 +20,7 @@ Rails.application.routes.draw do
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "root"
-  root 'steps#index'
+  root 'home#home'
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
