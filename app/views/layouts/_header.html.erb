@@ -1,4 +1,32 @@
-<header>
-  <%= image_tag("logo.png" ) %>
-  <h1>ERIE: Evolution and Resilience of Industrial Ecosystems</h1>
-</header>
+<div class = "header">
+    <div class = "menu">
+        <div class = "title">
+            <span class = "title-trigger">
+                <a href = "/">
+                    <span id = "title-text">FIITT</span>
+                </a>
+            </span>
+        </div>
+        <div class = "navigation">
+            <ul class = "menu">
+                <li id = "menu-home" class = "menu-button">
+                    <a href = "/" class = "menu-text">HOME</a>
+                </li>
+                <li id = "menu-incident_scenarios" class = "menu-button">
+                    <%= link_to "INCIDENT SCENARIOS", games_path, class: "menu-text" %>
+
+                </li>
+                <li id = "menu-sign-in" class = "menu-button">
+                    <% if player_signed_in? %>
+                        <%= link_to "SIGN OUT", destroy_player_session_path, :method => :delete, class: "menu-text" %>
+                    <% else %>
+                        <%= link_to "SIGN IN", new_player_session_path, class: "menu-text" %>
+                    <% end %>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class = "spacer">
+    &nbsp;
+</div>

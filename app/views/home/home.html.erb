@@ -1,0 +1,29 @@
+<%= render 'layouts/header' %>
+<div class = "home">
+    <div class = "banner">
+        <div class = "banner-container">
+            <div class = "banner-text">
+                <h1>
+                    <span class = "highlight">F</span>ood&nbsp;<span class = "highlight">I</span>ncident<br>
+                    <span class = "highlight">I</span>nteractive<br>
+                    <span class = "highlight">T</span>raining&nbsp;<span class = "highlight">T</span>ool
+                </h1>
+                <p>Are you ready to take the FIITT-ness challenge?</p>
+                <% if player_signed_in? %>
+                    <%= link_to "START", games_path, class: "button" %>
+                <% else %>
+                    <%= link_to "START", new_player_session_path, class: "button" %>
+                <% end %>
+            </div>
+        </div>
+    </div>
+    <div class = "welcome">
+        <div class = "text welcome-text">
+            <h1>Welcome to the Food Incident Interactive Training Tool</h1>
+            <hr class = "styled-hr"/>
+            <p>The FIITT aims to build the foundation for effective management of food incidents among food business organisations. Users of this tool will be immersed in simulations of different food incident scenarios, during which the user will be asked to make a choice among several decision options based on the information that is made available.<br><br>At the end of a scenario, the user can compare his or her decisions to that of industry practices through the “User Performance Report”.</p>
+            <hr class = "styled-hr"/>
+        </div>
+    </div>
+    <%= render 'layouts/footer' %>
+</div>

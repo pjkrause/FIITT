@@ -1,16 +1,14 @@
-<!--<%= render 'layouts/header' %>
-<%= render 'layouts/login' %>-->
-
-<article class="games_content">
+<%= render 'layouts/header' %>
+<div class = "games">
     <!--<p id="notice"><%= notice %></p>-->
-    <h2 class = "shadowed title">Please select an incident scenario</h2>
+    <h2>Please select an incident scenario</h2>
 
-    <div class="games_scenarios">
+    <div class="games-scenarios">
         <!-- TEMPORARY PICTURE VARIABLE -->
         <%count = 0 %>
         <% @games.each do |game| %>
         <%count = count+1 %>
-        <div class="game_tile_border">
+        <div class="game-tile-border">
             <section class="game_tile pic<%=count.to_s%>">
 
                 <!--<h1><%= game.title %></h1>
@@ -21,7 +19,7 @@
                     <% if player_signed_in? %>
                     <%= button_to "Start the Scenario", 'start/' + game.first_step.to_s, method: :get, class: "game_tile_button" %>
                     <% else %>
-                    Log in to start a scenario
+                    <%= button_to "Start the Scenario", new_player_session_path, class: "game_tile_button" %>
                     <% end %>
                 </p>
             </section>
@@ -30,8 +28,9 @@
 
     </div>
 
-    <%= link_to "Home", root_path, class: "button gray rounded medium" %>
+    <!--<%= link_to "Home", root_path, class: "button gray rounded medium" %>
 
     <div class="erie_logo"></div>
-    <div class="surrey_logo"></div>
-</article>
+    <div class="surrey_logo"></div>-->
+</div>
+<%= render 'layouts/footer' %>

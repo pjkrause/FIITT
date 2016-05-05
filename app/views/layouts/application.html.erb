@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>FIITT</title>
-  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
-  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
-  <%= csrf_meta_tags %>
-</head>
+    <head>
+        <title>FIITT</title>
+        <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+        <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+        <%= csrf_meta_tags %>
+        <link href="//fonts.googleapis.com/css?family=Raleway:400,300,200,700&amp;subset=latin,latin-ext" rel="stylesheet" type="text/css">
+        <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic&amp;subset=latin,latin-ext" rel="stylesheet" type="text/css">
+    </head>
 
-<body>
-<div class="base-unit">
+    <body>
+        <div class="base-unit">
 
-  <%= yield %>
+            <%= yield %>
 
-<footer></footer>
-</div>
+        </div>
 
-</body>
+    </body>
 </html>
