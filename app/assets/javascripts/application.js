@@ -16,6 +16,19 @@
 //= require turbolinks
 //= require_tree .
 
+// jQuery to collapse the navbar on scroll
+function collapseHeader() {
+    if ($(".navigation").offset().top > 100) {
+        $(".title").addClass("title-collapse");
+        $(".navigation").addClass("navigation-collapse");
+    } else {
+        $(".title").removeClass("title-collapse");
+        $(".navigation").removeClass("navigation-collapse");
+    }
+}
+$(window).scroll(collapseHeader);
+$(document).ready(collapseHeader);
+
 $(function() {
 //   $(":submit").prop('disabled', true);
   $(":checkbox").change(function(e) {
