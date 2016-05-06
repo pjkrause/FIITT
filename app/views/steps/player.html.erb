@@ -11,9 +11,27 @@
       </p>      
     <% else %>
       <ul>
-        You have played the following games
+        You have completed the following games
         <% @statuses.each do |status| %>
-          <li><%= Game.find(status.game_id).title %>, with trace <%= status.trace %></li>
+          <% if status.completed == true %>
+            <% begin %>
+              <li><%= Game.find(status.game_id).title %>, with trace <%= status.trace %></li>
+            <% rescue Exception %>
+              <li><%= "#{$!}, so no trace provided." %>
+            <% end %>
+          <%end %>
+        <% end %>
+      </ul>
+      <ul>
+        The following games are unfinished
+        <% @statuses.each do |status| %>
+          <% if status.completed == false %>
+            <% begin %>
+              <li><%= Game.find(status.game_id).title %>, with trace <%= status.trace %></li>
+            <% rescue Exception %>
+              <li><%= "#{$!}, so no trace provided." %>
+            <% end %>
+          <%end %>
         <% end %>
       </ul>
     <% end %>
