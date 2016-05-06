@@ -36,7 +36,7 @@ class StepsController < ApplicationController
     @step = Step.find(params[:id])
     @decision_choices = @step.decisions
     @messages = @step.stakeholder_messages
-    @status = Status.create(player_id: current_player.id, game_id: @step.game_id)
+    @status = Status.create(player_id: current_player.id, game_id: @step.game_id, trace: {"0"=>[[], @step.id]})
     set_status(@status.id)
   end
 
@@ -46,9 +46,9 @@ class StepsController < ApplicationController
       redirect_to action: "end_game", id: @step
     else
     #  @choices = Choices.new
-      @status.trace += [[@decision_choices, @step.id]] # I think this should be current_step
+      @status.day_no += 1 # @status.day_no + @decision.days
+      @status.trace["#{@status.day_no}"] = [@key, @step.id] # I think this should be current_step
       @messages = @step.stakeholder_messages
-#      @status.day_no = @status.day_no + @decision.days
 #      @status.external_communication = @status.external_communication + @decision.ec
 #      @status.internal_communication = @status.internal_communication + @decision.ic
 #      @status.media_perception = @status.media_perception + @decision.mp
@@ -59,13 +59,14 @@ class StepsController < ApplicationController
 
   def end_game
     @step = Step.find(params[:id])
-    @status.trace += [[@decision_choices, @step.id]]
+    @status.day_no += 1 # @status.day_no + @decision.days
+    @status.trace["#{@status.day_no}"] = [@key, @step.id]
     @messages = @step.stakeholder_messages
-#    @status.day_no = @status.day_no + @decision.days
 #    @status.external_communication = @status.external_communication + @decision.ec
 #    @status.internal_communication = @status.internal_communication + @decision.ic
 #    @status.media_perception = @status.media_perception + @decision.mp
 #    @status.public_perception = @status.public_perception + @decision.pp
+    @status.completed = true
     @status.save
     respond_to do |format|
       format.html
@@ -138,9 +139,10 @@ class StepsController < ApplicationController
     def set_next_step   
     #  @decision = Decision.find(params[:id]) 
       @choices = params[:choices]["choice_ids"]
-      key = @choices.map{|i| i.to_i}
+      @key = @choices.map{|i| i.to_i}
+      puts "Choices are #{@choices}. Key is #{@key} of type #{@key.class}"
       current_step = Step.find(params[:current_step])
-      next_step_id = current_step.decision_table[String(key)].to_i
+      next_step_id = current_step.decision_table[String(@key)].to_i
       if next_step_id != 0
         @step = Step.find(next_step_id)
       else
