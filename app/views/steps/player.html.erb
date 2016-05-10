@@ -27,7 +27,7 @@
         <% @statuses.each do |status| %>
           <% if status.completed == false %>
             <% begin %>
-              <li><%= Game.find(status.game_id).title %>, with trace <%= status.trace %></li>
+              <li><%= Game.find(status.game_id).title %>, with trace <%= link_to status.trace, resume_path(status) %> </li>
             <% rescue Exception %>
               <li><%= "#{$!}, so no trace provided." %>
             <% end %>

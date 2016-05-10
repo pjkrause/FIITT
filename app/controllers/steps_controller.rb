@@ -1,6 +1,6 @@
 class StepsController < ApplicationController
   include CurrentStatus
-  # before_action :set_step, only: [:show, :edit, :update, :destroy]
+  before_action :set_step, only: [:end_game]
   before_action :get_status, only: [:show, :end_game]
   before_action :set_next_step, only: [:show] #, :end_game]
 
@@ -17,6 +17,11 @@ class StepsController < ApplicationController
 
   def games
     @games = Game.all
+    if current_player
+      @statuses = Status.where("player_id = ? and completed = false", current_player.id)
+    else
+      @statuses = []
+    end
   end
 
   def player
@@ -57,8 +62,21 @@ class StepsController < ApplicationController
     end
   end
 
+  def resume
+    @status = Status.find(params[:id])
+    set_status(@status.id)
+    set_resumed_step(@status)
+    @decision_choices = @step.decisions
+    if @decision_choices == []
+      redirect_to action: "end_game", id: @step
+    else
+      @messages = @step.stakeholder_messages
+    end
+    render :show
+  end
+
   def end_game
-    @step = Step.find(params[:id])
+    # @step = Step.find(params[:id])
     @status.day_no += 1 # @status.day_no + @decision.days
     @status.trace["#{@status.day_no}"] = [@key, @step.id]
     @messages = @step.stakeholder_messages
@@ -149,6 +167,14 @@ class StepsController < ApplicationController
         @step = Step.find(current_step.default_step)
       end
     end
+
+    def set_resumed_step(status)
+      values = []
+      status.trace.each_value {|value| values << value}
+      id = values.last.split(',').last.split(']').first.to_i
+      @step = Step.find(id)
+    end
+
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def step_params

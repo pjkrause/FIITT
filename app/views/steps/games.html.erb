@@ -25,7 +25,12 @@
             </section>
         </div>
         <% end %>
-
+        <% if player_signed_in? %>
+            <p>
+            You have <%= @statuses.length %> incompleted game<%= "s" if @statuses.length != 1 %>.</br>
+            <%= link_to "Go to saved scenarios", player_path, class: "button gray rounded medium" %>
+            </p>
+        <% end %>
     </div>
 
     <!--<%= link_to "Home", root_path, class: "button gray rounded medium" %>
