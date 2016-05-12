@@ -15,9 +15,9 @@
         <% @statuses.each do |status| %>
           <% if status.completed == true %>
             <% begin %>
-              <li><%= Game.find(status.game_id).title %>, with trace <%= status.trace %></li>
+              <li><%= Game.find(status.game_id).title %>, created at <%= status.created_at %>. <%= link_to "Generate Report (PDF)", report_path(status, format: "pdf") %></li>
             <% rescue Exception %>
-              <li><%= "#{$!}, so no trace provided." %>
+              <li><%= "#{$!}, so no details provided." %>
             <% end %>
           <%end %>
         <% end %>
@@ -27,9 +27,10 @@
         <% @statuses.each do |status| %>
           <% if status.completed == false %>
             <% begin %>
-              <li><%= Game.find(status.game_id).title %>, with trace <%= link_to status.trace, resume_path(status) %> </li>
+              <li><%= Game.find(status.game_id).title %>, saved at: <%= status.updated_at %>.
+                <%= link_to "Resume Game?", resume_path(status) %> </li>
             <% rescue Exception %>
-              <li><%= "#{$!}, so no trace provided." %>
+              <li><%= "#{$!}, so no details provided." %>
             <% end %>
           <%end %>
         <% end %>
