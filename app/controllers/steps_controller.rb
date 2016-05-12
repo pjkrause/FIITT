@@ -47,18 +47,18 @@ class StepsController < ApplicationController
 
   def show
     @decision_choices = @step.decisions
+    @status.day_no += 1 # @status.day_no + @decision.days
+    @status.trace["#{@status.day_no}"] = [@key, @step.id] # I think this should be current_step
+    @status.save
     if @decision_choices == []
       redirect_to action: "end_game", id: @step
     else
     #  @choices = Choices.new
-      @status.day_no += 1 # @status.day_no + @decision.days
-      @status.trace["#{@status.day_no}"] = [@key, @step.id] # I think this should be current_step
       @messages = @step.stakeholder_messages
 #      @status.external_communication = @status.external_communication + @decision.ec
 #      @status.internal_communication = @status.internal_communication + @decision.ic
 #      @status.media_perception = @status.media_perception + @decision.mp
 #      @status.public_perception = @status.public_perception + @decision.pp
-      @status.save
     end
   end
 
@@ -77,8 +77,8 @@ class StepsController < ApplicationController
 
   def end_game
     # @step = Step.find(params[:id])
-    @status.day_no += 1 # @status.day_no + @decision.days
-    @status.trace["#{@status.day_no}"] = [@key, @step.id]
+#    @status.day_no += 1 # @status.day_no + @decision.days
+#    @status.trace["#{@status.day_no}"] = [@key, @step.id]
     @messages = @step.stakeholder_messages
 #    @status.external_communication = @status.external_communication + @decision.ec
 #    @status.internal_communication = @status.internal_communication + @decision.ic
@@ -98,6 +98,17 @@ class StepsController < ApplicationController
 
   end
 
+  def report
+    @status = Status.find(params[:id])
+    respond_to do |format|
+      format.pdf do
+        pdf = ReportPdf.new(@status)
+        send_data pdf.render, filename: "fiitt_report#{@status.updated_at}.pdf",
+                              type: "application/pdf",
+                              disposition: "inline"
+      end
+    end
+  end
 
   # GET /steps/new
   def new
@@ -155,10 +166,8 @@ class StepsController < ApplicationController
     end
 
     def set_next_step   
-    #  @decision = Decision.find(params[:id]) 
       @choices = params[:choices]["choice_ids"]
       @key = @choices.map{|i| i.to_i}
-      puts "Choices are #{@choices}. Key is #{@key} of type #{@key.class}"
       current_step = Step.find(params[:current_step])
       next_step_id = current_step.decision_table[String(@key)].to_i
       if next_step_id != 0
