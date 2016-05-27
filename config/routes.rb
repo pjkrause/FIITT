@@ -9,7 +9,10 @@ Rails.application.routes.draw do
   resources :decisions
 
   # resources :steps
-  get 'games' => 'steps#games'
+  resources :games, only: [:show] do
+    get 'games' => 'steps#games'
+  end
+  
   get 'about' => 'steps#about'
   get 'player' => 'steps#player'
   get 'start/:id' => 'steps#start'
