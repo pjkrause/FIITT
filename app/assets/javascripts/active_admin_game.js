@@ -95,12 +95,123 @@ var drawStep = function(step) {
   layer.addChild(step_text);
 
   layer.status_message = step.status_message;
+  layer.connections = [];
 }
 
 var drawConnection = function(origin, destination) {
 
+  var origin_point = new Point(origin.firstChild.position);
+  var destination_point = new Point(destination.firstChild.position);
+  var mid_point = new Point();
+
+  // now adjust for rectangle edges
+  if(origin_point.x > destination_point.x) {
+    origin_point.x -= origin.firstChild.bounds.width / 2;
+    destination_point.x += destination.firstChild.bounds.width / 2;
+  } else {
+    origin_point.x += origin.firstChild.bounds.width / 2;
+    destination_point.x -= destination.firstChild.bounds.width / 2;
+  }
+
+  if(origin_point.y > destination_point.y) {
+    origin_point.y -= origin.firstChild.bounds.height / 2;
+    destination_point.y += destination.firstChild.bounds.height / 2;
+  } else {
+    origin_point.y += origin.firstChild.bounds.height / 2;
+    destination_point.y -= destination.firstChild.bounds.height / 2;
+  }
+
+  mid_point = new Point((origin_point.x + destination_point.x) / 2, (origin_point.y + destination_point.y) / 2);
+
+  // create the new connection and add to the origin
+  var connection_layer = new Layer();
+  var new_connection = new Path.Line(origin_point, destination_point);
+  //var arrow = new Path.RegularPolygon(mid_point, 3, 10);
+
+  new_connection.strokeColor = 'black';
+  new_connection.strokeWidth = 3;
+
+  var arrow = new Point(destination_point.x - origin_point.x, destination_point.y - origin_point.y);
+  arrow = arrow.normalize(20);
+  var arrow_path = new Path([arrow.rotate(135), new Point(0,0), arrow.rotate(-135)]);
+
+  arrow_path.strokeColor = 'black';
+  arrow_path.strokeWidth = 3;
+  arrow_path.translate(mid_point);
+
+  connection_layer.addChild(new_connection);
+  connection_layer.addChild(arrow_path);
+
+  origin.addChild(connection_layer);
+  origin.connections.push({to: destination, layer: connection_layer})
+  destination.connections.push({from: origin, layer: connection_layer})
 }
 
+var redraw_connections = function(origin) {
+
+  var origin_point = null,
+      destination_point = null;
+
+  $.each(origin.connections, function(index, connection) {
+
+    if(connection.to) {
+      connection.layer.firstChild.segments[1].point = connection.to.position;
+      origin_point = new Point(connection.layer.firstChild.segments[0].point);
+      destination_point = new Point(connection.layer.firstChild.segments[1].point);
+
+      if(connection.to.position.x > origin.position.x) {
+        connection.layer.firstChild.segments[1].point.x -= origin.firstChild.bounds.width / 2;
+        destination_point.x -= origin.firstChild.bounds.width / 2;
+      } else {
+        connection.layer.firstChild.segments[1].point.x += origin.firstChild.bounds.width / 2;
+        destination_point.x += origin.firstChild.bounds.width / 2;
+      }
+
+      if(connection.to.y > origin.position.y) {
+        connection.layer.firstChild.segments[1].point.y -= origin.firstChild.bounds.height / 2;
+        destination_point.y += origin.firstChild.bounds.height / 2;
+      } else {
+        connection.layer.firstChild.segments[1].point.y += origin.firstChild.bounds.height / 2;
+        destination_point.y += origin.firstChild.bounds.height / 2;
+      }
+
+    } else if(connection.from) {
+      connection.layer.firstChild.segments[1].point = origin.position;
+      origin_point = new Point(connection.layer.firstChild.segments[0].point);
+      destination_point = new Point(connection.layer.firstChild.segments[1].point);
+
+      if(connection.from.position.x > origin.position.x) {
+        connection.layer.firstChild.segments[1].point.x += origin.firstChild.bounds.width / 2;
+        destination_point.x += origin.firstChild.bounds.width / 2;
+      } else {
+        connection.layer.firstChild.segments[1].point.x -= origin.firstChild.bounds.width / 2;
+        destination_point.x -= origin.firstChild.bounds.width / 2;
+      }
+
+      if(connection.from.y > origin.position.y) {
+        connection.layer.firstChild.segments[1].point.y -= origin.firstChild.bounds.height / 2;
+        destination_point.y -= origin.firstChild.bounds.height / 2;
+      } else {
+        connection.layer.firstChild.segments[1].point.y += origin.firstChild.bounds.height / 2;
+        destination_point.y += origin.firstChild.bounds.height / 2;
+      }
+    }
+
+    // redraw the arrow
+    connection.layer.lastChild.remove();
+    var mid_point = new Point((origin_point.x + destination_point.x) / 2, (origin_point.y + destination_point.y) / 2);
+
+    var arrow = new Point(destination_point.x - origin_point.x, destination_point.y - origin_point.y);
+    arrow = arrow.normalize(20);
+
+    var arrow_path = new Group(new Path([arrow.rotate(135), new Point(0,0), arrow.rotate(-135)]));
+    arrow_path.strokeColor = 'black';
+    arrow_path.strokeWidth = 3;
+    arrow_path.translate(mid_point);
+
+    connection.layer.addChild(arrow_path);
+  });
+}
 
 var panAndZoom = {
     oldZoom: 0.0,
@@ -140,6 +251,8 @@ $(function() {
   var pan_view = false;
   var drag_item = null;
   var currently_selected_item = null;
+  var creating_new_path = false;
+  new_path = null;
 
   if(current_path.length > 3 && current_path.split( '/' )[4] === "edit") {
     var current_game_id = current_path.split( '/' )[3];
@@ -172,27 +285,28 @@ $(function() {
 
             if (hitResult) {
           		if (hitResult.type == 'fill') {
+                // remove red border from currently selected item
+                if(currently_selected_item) {
+                  currently_selected_item.firstChild.strokeWidth = 0;
+                }
+
+                // add red border to new currently selected item
+                currently_selected_item = hitResult.item.layer;
+                hitResult.item.layer.firstChild.strokeWidth = 3;
+
+                // update the form with the details for this item
+                $("textarea#status_message").val(currently_selected_item.status_message)
+
                 if(event.modifiers.shift) {
-                  console.log("shift clicking item");
                   var layer = hitResult.item.layer;
-                  path = new Path();
-                  path.add(event.point);
+                  layer.bringToFront();
+                  path = new Path.Line(event.point, event.point);
                   path.strokeColor = 'black';
-
+                  path.strokeWidth = 3;
+                  layer.addChild(path);
+                  creating_new_path = true;
+                  new_path = path;
                 } else {
-                  // remove red border from currently selected item
-                  if(currently_selected_item) {
-                    currently_selected_item.firstChild.strokeWidth = 0;
-                  }
-
-                  // add red border to new currently selected item
-                  currently_selected_item = hitResult.item.layer;
-                  hitResult.item.layer.firstChild.strokeWidth = 3;
-
-                  // update the form with the details for this item
-                  console.log(currently_selected_item.status_message)
-                  $("textarea#status_message").val(currently_selected_item.status_message)
-
                   // set this item to be draggable
                   drag_item = hitResult.item.layer;
                 }
@@ -208,16 +322,20 @@ $(function() {
 
           // handler for mousemovent events
           if(pan_view === true) {
-
             // pan the view around
             paper.view.center = panAndZoom.changeCenter(view.center, event.delta.x, event.delta.y, 0.6);
 
           } else if(drag_item) {
-
             // drag an item around
             drag_item.position = panAndZoom.changeCenter(drag_item.position, event.delta.x, -event.delta.y, 1.0);
+            if(drag_item.connections.length > 0) {
+              redraw_connections(drag_item);
+            }
+          } else if(creating_new_path === true) {
+            // create a new path
+            new_path.segments[new_path.segments.length-1].point = event.point;
 
-          } else {
+          }else {
 
             // show items as "selected" when we hover on them
             paper.project.deselectAll();
@@ -238,6 +356,37 @@ $(function() {
           // reset any dragging/panning that may have occured
           pan_view = false;
           drag_item = null;
+
+          if(creating_new_path) {
+            var hitOptions = { fill: true, stroke: false, segments: false, tolerance: 0, bounds: false };
+            var hitResult = paper.project.hitTest(event.point, hitOptions);
+
+            if (hitResult) {
+          		if (hitResult.type == 'fill') {
+                if(currently_selected_item !== hitResult.item.parent) {
+
+                  var connection_already_found;
+                  connection_already_found = false;
+
+                  $.each(currently_selected_item.connections, function(index, connection) {
+                    if(connection.to === hitResult.item.parent) {
+                      connection_already_found = true;
+                    }
+                  });
+
+                  if(connection_already_found === false) {
+                    drawConnection(currently_selected_item, hitResult.item.parent)
+                  }
+                }
+              }
+            } else {
+            }
+
+            creating_new_path = false;
+            new_path.remove();
+            new_path = null;
+          }
+
         });
     });
   }
