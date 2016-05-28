@@ -1,13 +1,49 @@
-var formatText = function() {
-  var formatted_title = "";
-  return formatted_title;
+var formatText = function(raw_string) {
+  var formatted_text = "";
+  var start_position = 0;
+  var end_position = 0;
+  var unused_text_position = null;
+
+  if(raw_string.length > 128) {
+    console.log(raw_string.length);
+    raw_string = raw_string.slice(0, 128) + "..."
+  }
+
+  for(var i = 0; i <= parseInt(raw_string.length / 20); i++) {
+    if(unused_text_position === null) {
+      start_position = i * 20;
+    } else {
+      start_position = unused_text_position;
+    }
+
+    if( i == parseInt(raw_string.length / 20)) {
+      end_position = raw_string.length - 1;
+    } else {
+      end_position = start_position + 19;
+    }
+
+    last_space_position = start_position + raw_string.slice(start_position, end_position).lastIndexOf(" ")
+    if(last_space_position < end_position) {
+      unused_text_position = last_space_position;
+    } else {
+      unused_text_position = null;
+    }
+
+    formatted_text += raw_string.slice(start_position, last_space_position).trim() + "\n"
+  }
+
+  if(unused_text_position) {
+    formatted_text += raw_string.slice(unused_text_position, raw_string.length).trim()
+  }
+
+  return formatted_text;
 }
 
 var drawGame = function(game) {
   var layer = new Layer();
   var rectangle = new Rectangle(new Point(0, 0), new Point(150, 100));
   var rectangle_path = new Path.Rectangle(rectangle);
-
+  console.log(game);
   game_title = formatText(game.title)
 
   var game_text = new PointText({
@@ -34,9 +70,11 @@ var drawStep = function(step) {
   var rectangle = new Rectangle(new Point(0, 0), new Point(150, 100));
   var rectangle_path = new Path.Rectangle(rectangle);
 
+  status_message = formatText(step.status_message)
+
   var step_text = new PointText({
     point: [0, 80],
-    content: step.status_message,
+    content: status_message,
     fillColor: 'black',
     fontFamily: 'Courier New',
     fontWeight: 'bold',
@@ -100,12 +138,12 @@ $(function() {
     $.getJSON( jsonURL, function (data){
         paper.setup('network_canvas');
 
-        drawGame(data);
+        drawGame(data.game);
 
-        // draw the steps for this game
-        // $.each(data.steps, function(index, step) {
-        //   drawStep(step);
-        // });
+        //draw the steps for this game
+        $.each(data.steps, function(index, step) {
+          drawStep(step);
+        });
 
         paper.view.update();
 
