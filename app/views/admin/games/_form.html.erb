@@ -1,5 +1,14 @@
-
-<% form_for([:admin,resource],:validate=>true) do |f| %>
-
+<canvas id="network_canvas" resize style="background: grey;"></canvas>
+<%=form_for :step do |f| %>
+  <fieldset class="inputs">
+    <legend>
+      <span>Step details</span>
+    </legend>
+    <ol>
+      <li id="status_message" class="input required stringish">
+        <%= f.label :status_message %>
+        <%= f.text_area :status_message, :size=>"45",:id=>"status_message" %>
+      </li>
+    </ol>
+  </fieldset>
 <% end %>
-<%= render "network_editor_panel" %>

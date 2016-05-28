@@ -4,11 +4,13 @@ var formatText = function(raw_string) {
   var end_position = 0;
   var unused_text_position = null;
 
+  // first cap any string at 128 chars
   if(raw_string.length > 128) {
-    console.log(raw_string.length);
     raw_string = raw_string.slice(0, 128) + "..."
   }
 
+  // now loop through and split into new lines where characters are greater
+  // than 20, taking spaces into account for the line breaks.
   for(var i = 0; i <= parseInt(raw_string.length / 20); i++) {
     if(unused_text_position === null) {
       start_position = i * 20;
@@ -32,6 +34,7 @@ var formatText = function(raw_string) {
     formatted_text += raw_string.slice(start_position, last_space_position).trim() + "\n"
   }
 
+  // make sure to add on any unused text at the end
   if(unused_text_position) {
     formatted_text += raw_string.slice(unused_text_position, raw_string.length).trim()
   }
@@ -43,7 +46,7 @@ var drawGame = function(game) {
   var layer = new Layer();
   var rectangle = new Rectangle(new Point(0, 0), new Point(150, 100));
   var rectangle_path = new Path.Rectangle(rectangle);
-  console.log(game);
+
   game_title = formatText(game.title)
 
   var game_text = new PointText({
@@ -84,10 +87,17 @@ var drawStep = function(step) {
   step_text.fitBounds(rectangle_path.bounds);
 
   rectangle_path.fillColor = '#e9e9ff';
+  rectangle_path.strokeColor = 'red';
+  rectangle_path.strokeWidth = 0;
 
   // Add the paths to the layer:
   layer.addChild(rectangle_path);
   layer.addChild(step_text);
+
+  layer.status_message = step.status_message;
+}
+
+var drawConnection = function(origin, destination) {
 
 }
 
@@ -129,6 +139,7 @@ $(function() {
   var current_path = $(location).attr('pathname');
   var pan_view = false;
   var drag_item = null;
+  var currently_selected_item = null;
 
   if(current_path.length > 3 && current_path.split( '/' )[4] === "edit") {
     var current_game_id = current_path.split( '/' )[3];
@@ -149,14 +160,7 @@ $(function() {
 
         paper.view.on("mousedown", function(event) {
 
-          pan_item = null;
-
-          if(event.shiftKey) {
-
-            view.center = panAndZoom.changeCenter(view.center, event.deltaX, event.deltaY, event.deltaFactor);
-            event.preventDefault();
-
-          } else if(event.altKey) {
+          if(event.altKey) {
 
             view.zoom = panAndZoom.changeZoom(view.zoom, event.deltaY);
             //mousePosition = new paper.Point(event.offsetX, event.offsetY)
@@ -168,8 +172,30 @@ $(function() {
 
             if (hitResult) {
           		if (hitResult.type == 'fill') {
-                console.log(hitResult.item);
-                drag_item = hitResult.item.layer;
+                if(event.modifiers.shift) {
+                  console.log("shift clicking item");
+                  var layer = hitResult.item.layer;
+                  path = new Path();
+                  path.add(event.point);
+                  path.strokeColor = 'black';
+
+                } else {
+                  // remove red border from currently selected item
+                  if(currently_selected_item) {
+                    currently_selected_item.firstChild.strokeWidth = 0;
+                  }
+
+                  // add red border to new currently selected item
+                  currently_selected_item = hitResult.item.layer;
+                  hitResult.item.layer.firstChild.strokeWidth = 3;
+
+                  // update the form with the details for this item
+                  console.log(currently_selected_item.status_message)
+                  $("textarea#status_message").val(currently_selected_item.status_message)
+
+                  // set this item to be draggable
+                  drag_item = hitResult.item.layer;
+                }
           		}
           	} else {
               pan_view = true;
