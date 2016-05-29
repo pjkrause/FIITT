@@ -11,12 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160506210338) do
+ActiveRecord::Schema.define(version: 20160529090521) do
 
   # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
   enable_extension "hstore"
+  enable_extension "pg_stat_statements"
 
   create_table "active_admin_comments", force: :cascade do |t|
     t.string   "namespace"
@@ -61,25 +61,20 @@ ActiveRecord::Schema.define(version: 20160506210338) do
     t.integer  "days"
     t.integer  "next_step"
     t.integer  "step_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+    t.integer  "x_position", default: 0
+    t.integer  "y_position", default: 0
   end
 
   create_table "games", force: :cascade do |t|
     t.string   "title"
     t.text     "description"
     t.integer  "first_step"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
-  end
-
-  create_table "orders", force: :cascade do |t|
-    t.string   "name",       limit: 255
-    t.string   "email",      limit: 255
-    t.string   "phone",      limit: 255
-    t.text     "details"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+    t.integer  "x_position",  default: 0
+    t.integer  "y_position",  default: 0
   end
 
   create_table "players", force: :cascade do |t|
@@ -99,16 +94,6 @@ ActiveRecord::Schema.define(version: 20160506210338) do
 
   add_index "players", ["email"], name: "index_players_on_email", unique: true, using: :btree
   add_index "players", ["reset_password_token"], name: "index_players_on_reset_password_token", unique: true, using: :btree
-
-  create_table "sales_items", force: :cascade do |t|
-    t.string   "category",   limit: 255
-    t.string   "name",       limit: 255
-    t.string   "code",       limit: 255
-    t.decimal  "price"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "image",      limit: 255
-  end
 
   create_table "stakeholder_messages", force: :cascade do |t|
     t.integer  "step_id"
@@ -144,6 +129,8 @@ ActiveRecord::Schema.define(version: 20160506210338) do
     t.hstore   "decision_table",  default: {}, null: false
     t.text     "guidance"
     t.integer  "default_step"
+    t.integer  "x_position",      default: 0
+    t.integer  "y_position",      default: 0
   end
 
 end
