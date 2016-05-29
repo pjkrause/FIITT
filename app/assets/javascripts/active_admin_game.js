@@ -58,7 +58,7 @@ var drawGame = function(game) {
     fontSize: 15
   });
 
-  rectangle_path.fillColor = '#505050';
+  rectangle_path.fillColor = '#FFF5C3';
   rectangle_path.strokeColor = '#FF7260';
 
   rectangle_path.translate(game.x_position, game.y_position);
@@ -134,12 +134,7 @@ var drawDecision = function(decision) {
   rectangle_path.strokeWidth = 0;
 
   rectangle_path.translate(decision.x_position, decision.y_position);
-
-  if(decision_message.length > 10) {
-    decision_text.fitBounds(rectangle_path.bounds);
-  } else {
-    decision_text.translate(decision.x_position, decision.y_position);
-  }
+  decision_text.fitBounds(rectangle_path.bounds);
 
   // Add the paths to the layer:
   layer.addChild(rectangle_path);
@@ -427,6 +422,7 @@ $(function() {
             $('#network_canvas').css('cursor','grabbing');
             // drag an item around
             drag_item.firstChild.position = panAndZoom.changeCenter(drag_item.firstChild.position, event.delta.x, event.delta.y, 1.0);
+            drag_item.children[1].fitBounds(drag_item.firstChild.bounds);
 
             if(drag_item.connections.length > 0) {
               redraw_connections(drag_item);
