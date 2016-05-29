@@ -1,4 +1,6 @@
 <canvas id="network_canvas" resize style="background: grey;"></canvas>
+<button id="save_game_layout">Save Game Layout</button>
+<br /><br />
 <%=form_for :step do |f| %>
   <fieldset class="inputs">
     <legend>
@@ -10,5 +12,20 @@
         <%= f.text_area :status_message, :size=>"45",:id=>"status_message" %>
       </li>
     </ol>
+    <%= submit_tag("Update Step") %>
+  </fieldset>
+<% end %>
+<%=form_for :decision do |f| %>
+  <fieldset class="inputs">
+    <legend>
+      <span>Decision details</span>
+    </legend>
+    <ol>
+      <li id="status_message" class="input required stringish">
+        <%= f.label :choice %>
+        <%= f.text_area :choice, :size=>"45",:id=>"choice" %>
+      </li>
+    </ol>
+    <%= submit_tag("Update Decision") %>
   </fieldset>
 <% end %>

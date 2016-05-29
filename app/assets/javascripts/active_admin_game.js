@@ -44,7 +44,7 @@ var formatText = function(raw_string) {
 
 var drawGame = function(game) {
   var layer = new Layer();
-  var rectangle = new Rectangle(new Point(0, 0), new Point(150, 100));
+  var rectangle = new Rectangle(new Point(game.x_position, game.y_position), new Point(game.x_position + 150, game.y_position + 100));
   var rectangle_path = new Path.Rectangle(rectangle);
 
   game_title = formatText(game.title)
@@ -55,7 +55,7 @@ var drawGame = function(game) {
     fillColor: 'black',
     fontFamily: 'Courier New',
     fontWeight: 'bold',
-    fontSize: 25
+    fontSize: 15
   });
 
   game_text.fitBounds(rectangle_path.bounds);
@@ -70,7 +70,7 @@ var drawGame = function(game) {
 
 var drawStep = function(step) {
   var layer = new Layer();
-  var rectangle = new Rectangle(new Point(0, 0), new Point(150, 100));
+  var rectangle = new Rectangle(new Point(step.x_position, step.y_position), new Point(step.x_position + 150, step.y_position + 100));
   var rectangle_path = new Path.Rectangle(rectangle);
 
   status_message = formatText(step.status_message)
@@ -81,7 +81,7 @@ var drawStep = function(step) {
     fillColor: 'black',
     fontFamily: 'Courier New',
     fontWeight: 'bold',
-    fontSize: 25
+    fontSize: 15
   });
 
   step_text.fitBounds(rectangle_path.bounds);
@@ -96,13 +96,14 @@ var drawStep = function(step) {
 
   layer.status_message = step.status_message;
   layer.connections = [];
+  layer.step_id = step.id
 
   return layer;
 }
 
 var drawDecision = function(decision) {
   var layer = new Layer();
-  var rectangle = new Rectangle(new Point(0, 0), new Point(150, 100));
+  var rectangle = new Rectangle(new Point(decision.x_position, decision.y_position), new Point(decision.x_position + 150, decision.y_position + 100));
   var rectangle_path = new Path.Rectangle(rectangle);
 
   decision_message = formatText(decision.choice)
@@ -113,7 +114,7 @@ var drawDecision = function(decision) {
     fillColor: 'black',
     fontFamily: 'Courier New',
     fontWeight: 'bold',
-    fontSize: 25
+    fontSize: 15
   });
 
   decision_text.fitBounds(rectangle_path.bounds);
@@ -128,6 +129,7 @@ var drawDecision = function(decision) {
 
   layer.decision_message = decision.choice;
   layer.connections = [];
+  layer.decision_id = decision.id
 
   return layer;
 }
@@ -273,7 +275,7 @@ var panAndZoom = {
     // return StableZoom;
     changeCenter: function(oldCenter, deltaX, deltaY, factor) {
       var offset;
-      offset = new paper.Point(deltaX, -deltaY);
+      offset = new paper.Point(deltaX, deltaY);
       offset = offset.multiply(factor);
       return oldCenter.add(offset);
     }
@@ -284,6 +286,7 @@ $(function() {
 
   var current_path = $(location).attr('pathname');
   var pan_view = false;
+  var zoom_view = false;
   var drag_item = null;
   var currently_selected_item = null;
   var creating_new_path = false;
@@ -305,19 +308,25 @@ $(function() {
 
           $.each(step.decisions, function(index, decision) {
             current_decision = drawDecision(decision)
+            // link steps and decisions
             drawConnection(current_step, current_decision)
           });
 
         });
 
+        // link up decisions to next steps
+        $.each(data.steps, function(index, step) {
+
+        })
+
         paper.view.update();
 
         paper.view.on("mousedown", function(event) {
 
-          if(event.altKey) {
-
-            view.zoom = panAndZoom.changeZoom(view.zoom, event.deltaY);
-            //mousePosition = new paper.Point(event.offsetX, event.offsetY)
+          if(event.modifiers.alt || event.modifiers.option) {
+            console.log("zoom");
+            console.log(event);
+            zoom_view = true;
 
           } else {
 
@@ -366,9 +375,13 @@ $(function() {
             // pan the view around
             paper.view.center = panAndZoom.changeCenter(view.center, event.delta.x, event.delta.y, 0.6);
 
+          } else if(zoom_view === true) {
+            // zoom in or out
+            paper.view.zoom = panAndZoom.changeZoom(view.zoom, event.delta.y);
+
           } else if(drag_item) {
             // drag an item around
-            drag_item.position = panAndZoom.changeCenter(drag_item.position, event.delta.x, -event.delta.y, 1.0);
+            drag_item.position = panAndZoom.changeCenter(drag_item.position, event.delta.x, event.delta.y, 1.0);
             if(drag_item.connections.length > 0) {
               redraw_connections(drag_item);
             }
@@ -394,8 +407,9 @@ $(function() {
         });
 
         paper.view.on("mouseup", function(event) {
-          // reset any dragging/panning that may have occured
+          // reset any dragging/panning/zooming that may have occured
           pan_view = false;
+          zoom_view = false;
           drag_item = null;
 
           if(creating_new_path) {
@@ -431,4 +445,39 @@ $(function() {
         });
     });
   }
+
+  $("#save_game_layout").on("click", function() {
+    console.log("saving game layout");
+    var json_payload = {
+      games: {
+        id: 1,
+        steps: [],
+        decisions: []
+      }
+    };
+
+    $.each(paper.project.layers, function(index, layer) {
+      if("step_id" in layer) {
+        json_payload.games.steps.push({ id: layer.step_id, x_position: layer.position.x - layer.bounds.width / 2, y_position: layer.position.y - layer.bounds.height / 2})
+      } else if("decision_id" in layer) {
+        json_payload.games.decisions.push({ id: layer.decision_id, x_position: layer.position.x - layer.bounds.width / 2, y_position: layer.position.y - layer.bounds.height / 2 })
+      }
+    });
+
+    var current_path = $(location).attr('pathname');
+
+    if(current_path.length > 3 && current_path.split( '/' )[4] === "edit") {
+      var current_game_id = current_path.split( '/' )[3];
+      var jsonURL = "/games/" + current_game_id + "/game_layout";
+
+      $.ajax({
+        url: jsonURL,
+        method: "PUT",
+        data: json_payload,
+      }).done(function() {
+      }).error(function(error) {
+        alert("error: " + error)
+      });
+    }
+  });
 });
