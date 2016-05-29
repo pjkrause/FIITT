@@ -66,6 +66,7 @@ var drawGame = function(game) {
   layer.addChild(rectangle_path);
   layer.addChild(game_text);
   layer.connections = [];
+  layer.game_id = game.id;
 
   return layer;
 }
@@ -485,6 +486,8 @@ $(function() {
     var json_payload = {
       games: {
         id: null,
+        x: null,
+        y: null,
         pan_x: paper.view.center.x,
         pan_y: paper.view.center.y,
         zoom: paper.view.zoom,
@@ -494,7 +497,10 @@ $(function() {
     };
 
     $.each(paper.project.layers, function(index, layer) {
-      if("step_id" in layer) {
+      if("game_id" in layer) {
+        json_payload.games.x = layer.position.x - layer.bounds.width / 2;
+        json_payload.games.y = layer.position.y - layer.bounds.height / 2;
+      } else if("step_id" in layer) {
         json_payload.games.steps.push({ id: layer.step_id, x_position: layer.position.x - layer.bounds.width / 2, y_position: layer.position.y - layer.bounds.height / 2})
       } else if("decision_id" in layer) {
         json_payload.games.decisions.push({ id: layer.decision_id, x_position: layer.position.x - layer.bounds.width / 2, y_position: layer.position.y - layer.bounds.height / 2 })
@@ -515,7 +521,8 @@ $(function() {
         data: json_payload,
       }).done(function() {
       }).error(function(error) {
-        alert("error: " + error)
+        alert("error: " + error);
+        console.log(error);
       });
     }
   });
