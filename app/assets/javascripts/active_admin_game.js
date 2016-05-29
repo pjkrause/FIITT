@@ -60,7 +60,7 @@ var drawGame = function(game) {
 
   game_text.fitBounds(rectangle_path.bounds);
 
-  rectangle_path.fillColor = '#e9e9ff';
+  rectangle_path.fillColor = '#505050';
 
   // Add the paths to the layer:
   layer.addChild(rectangle_path);
@@ -86,8 +86,8 @@ var drawStep = function(step) {
 
   step_text.fitBounds(rectangle_path.bounds);
 
-  rectangle_path.fillColor = '#e9e9ff';
-  rectangle_path.strokeColor = 'red';
+  rectangle_path.fillColor = '#129793';
+  rectangle_path.strokeColor = '#FF7260';
   rectangle_path.strokeWidth = 0;
 
   // Add the paths to the layer:
@@ -96,7 +96,42 @@ var drawStep = function(step) {
 
   layer.status_message = step.status_message;
   layer.connections = [];
+
+  return layer;
 }
+
+var drawDecision = function(decision) {
+  var layer = new Layer();
+  var rectangle = new Rectangle(new Point(0, 0), new Point(150, 100));
+  var rectangle_path = new Path.Rectangle(rectangle);
+
+  decision_message = formatText(decision.choice)
+
+  var decision_text = new PointText({
+    point: [0, 80],
+    content: decision_message,
+    fillColor: 'black',
+    fontFamily: 'Courier New',
+    fontWeight: 'bold',
+    fontSize: 25
+  });
+
+  decision_text.fitBounds(rectangle_path.bounds);
+
+  rectangle_path.fillColor = '#9BD7D5';
+  rectangle_path.strokeColor = '#FF7260';
+  rectangle_path.strokeWidth = 0;
+
+  // Add the paths to the layer:
+  layer.addChild(rectangle_path);
+  layer.addChild(decision_text);
+
+  layer.decision_message = decision.choice;
+  layer.connections = [];
+
+  return layer;
+}
+
 
 var drawConnection = function(origin, destination) {
 
@@ -257,7 +292,7 @@ $(function() {
   if(current_path.length > 3 && current_path.split( '/' )[4] === "edit") {
     var current_game_id = current_path.split( '/' )[3];
     var jsonURL = "/games/" + current_game_id + ".json";
-
+    var current_step, current_decision;
     paper.install(window);
     $.getJSON( jsonURL, function (data){
         paper.setup('network_canvas');
@@ -266,7 +301,13 @@ $(function() {
 
         //draw the steps for this game
         $.each(data.steps, function(index, step) {
-          drawStep(step);
+          current_step = drawStep(step);
+
+          $.each(step.decisions, function(index, decision) {
+            current_decision = drawDecision(decision)
+            drawConnection(current_step, current_decision)
+          });
+
         });
 
         paper.view.update();
