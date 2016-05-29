@@ -328,8 +328,32 @@ $(function() {
 
         // link up decisions to next steps
         $.each(data.steps, function(index, step) {
+          $.each(step.decisions, function(index, decision) {
 
-        })
+            // find the decision display item
+            $.each(paper.project.layers, function(index, layer) {
+              if("decision_id" in layer) {
+                if(layer.decision_id === decision.id) {
+                  current_decision = layer;
+                  console.log("found match");
+                }
+              }
+            });
+
+            // find the next step display item
+            $.each(paper.project.layers, function(index, layer) {
+              if("step_id" in layer) {
+                if(layer.step_id === decision.next_step) {
+                  current_step = layer;
+                  console.log("found match");
+                }
+              }
+            });
+
+            // link up the decision to the next step
+            drawConnection(current_decision, current_step)
+          });
+        });
 
 
         paper.view.center = new Point(data.game.pan_x_position, data.game.pan_y_position)
