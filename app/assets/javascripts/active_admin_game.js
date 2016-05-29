@@ -44,7 +44,7 @@ var formatText = function(raw_string) {
 
 var drawGame = function(game) {
   var layer = new Layer();
-  var rectangle = new Rectangle(new Point(game.x_position, game.y_position), new Point(game.x_position + 150, game.y_position + 100));
+  var rectangle = new Rectangle(new Point(0, 0), new Point(150, 100));
   var rectangle_path = new Path.Rectangle(rectangle);
 
   game_title = formatText(game.title)
@@ -58,10 +58,11 @@ var drawGame = function(game) {
     fontSize: 15
   });
 
-  game_text.fitBounds(rectangle_path.bounds);
-
   rectangle_path.fillColor = '#505050';
   rectangle_path.strokeColor = '#FF7260';
+
+  rectangle_path.translate(game.x_position, game.y_position);
+  game_text.fitBounds(rectangle_path.bounds);
 
   // Add the paths to the layer:
   layer.addChild(rectangle_path);
@@ -76,7 +77,11 @@ var drawGame = function(game) {
 
 var drawStep = function(step) {
   var layer = new Layer();
-  var rectangle = new Rectangle(new Point(step.x_position, step.y_position), new Point(step.x_position + 150, step.y_position + 100));
+  if(step.id === 4) {
+    console.log(step.x_position);
+    console.log(step.y_position);
+  }
+  var rectangle = new Rectangle(new Point(0, 0), new Point(150, 100));
   var rectangle_path = new Path.Rectangle(rectangle);
 
   status_message = formatText(step.status_message)
@@ -90,11 +95,12 @@ var drawStep = function(step) {
     fontSize: 15
   });
 
-  step_text.fitBounds(rectangle_path.bounds);
-
   rectangle_path.fillColor = '#129793';
   rectangle_path.strokeColor = '#FF7260';
   rectangle_path.strokeWidth = 0;
+
+  rectangle_path.translate(step.x_position, step.y_position);
+  step_text.fitBounds(rectangle_path.bounds);
 
   // Add the paths to the layer:
   layer.addChild(rectangle_path);
@@ -109,7 +115,7 @@ var drawStep = function(step) {
 
 var drawDecision = function(decision) {
   var layer = new Layer();
-  var rectangle = new Rectangle(new Point(decision.x_position, decision.y_position), new Point(decision.x_position + 150, decision.y_position + 100));
+  var rectangle = new Rectangle(new Point(0, 0), new Point(150, 100));
   var rectangle_path = new Path.Rectangle(rectangle);
 
   decision_message = formatText(decision.choice)
@@ -123,11 +129,17 @@ var drawDecision = function(decision) {
     fontSize: 15
   });
 
-  decision_text.fitBounds(rectangle_path.bounds);
-
   rectangle_path.fillColor = '#9BD7D5';
   rectangle_path.strokeColor = '#FF7260';
   rectangle_path.strokeWidth = 0;
+
+  rectangle_path.translate(decision.x_position, decision.y_position);
+
+  if(decision_message.length > 10) {
+    decision_text.fitBounds(rectangle_path.bounds);
+  } else {
+    decision_text.translate(decision.x_position, decision.y_position);
+  }
 
   // Add the paths to the layer:
   layer.addChild(rectangle_path);
@@ -156,14 +168,6 @@ var drawConnection = function(origin, destination) {
     destination_point.x -= destination.firstChild.bounds.width / 2;
   }
 
-  if(origin_point.y > destination_point.y) {
-    origin_point.y -= origin.firstChild.bounds.height / 2;
-    destination_point.y += destination.firstChild.bounds.height / 2;
-  } else {
-    origin_point.y += origin.firstChild.bounds.height / 2;
-    destination_point.y -= destination.firstChild.bounds.height / 2;
-  }
-
   mid_point = new Point((origin_point.x + destination_point.x) / 2, (origin_point.y + destination_point.y) / 2);
 
   // create the new connection and add to the origin
@@ -176,14 +180,11 @@ var drawConnection = function(origin, destination) {
 
   var arrow = new Point(destination_point.x - origin_point.x, destination_point.y - origin_point.y);
   arrow = arrow.normalize(20);
-  var arrow_path = new Path([arrow.rotate(135), new Point(0,0), arrow.rotate(-135)]);
+  var arrow_path = new Group(new Path([arrow.rotate(135), new Point(0,0), arrow.rotate(-135)]));
 
   arrow_path.strokeColor = 'black';
   arrow_path.strokeWidth = 3;
   arrow_path.translate(mid_point);
-
-  connection_layer.addChild(new_connection);
-  connection_layer.addChild(arrow_path);
 
   origin.addChild(connection_layer);
   origin.connections.push({to: destination, layer: connection_layer})
@@ -198,50 +199,36 @@ var redraw_connections = function(origin) {
   $.each(origin.connections, function(index, connection) {
 
     if(connection.to) {
-      connection.layer.firstChild.segments[1].point = connection.to.position;
-      origin_point = new Point(connection.layer.firstChild.segments[0].point);
-      destination_point = new Point(connection.layer.firstChild.segments[1].point);
-
-      if(connection.to.position.x > origin.position.x) {
-        connection.layer.firstChild.segments[1].point.x -= origin.firstChild.bounds.width / 2;
-        destination_point.x -= origin.firstChild.bounds.width / 2;
-      } else {
-        connection.layer.firstChild.segments[1].point.x += origin.firstChild.bounds.width / 2;
-        destination_point.x += origin.firstChild.bounds.width / 2;
-      }
-
-      if(connection.to.y > origin.position.y) {
-        connection.layer.firstChild.segments[1].point.y -= origin.firstChild.bounds.height / 2;
-        destination_point.y += origin.firstChild.bounds.height / 2;
-      } else {
-        connection.layer.firstChild.segments[1].point.y += origin.firstChild.bounds.height / 2;
-        destination_point.y += origin.firstChild.bounds.height / 2;
-      }
+      origin_point = new Point(origin.firstChild.position);
+      destination_point = new Point(connection.to.firstChild.position);
 
     } else if(connection.from) {
-      connection.layer.firstChild.segments[1].point = origin.position;
-      origin_point = new Point(connection.layer.firstChild.segments[0].point);
-      destination_point = new Point(connection.layer.firstChild.segments[1].point);
+      origin_point = new Point(connection.from.firstChild.position);
+      destination_point = new Point(origin.firstChild.position);
 
-      if(connection.from.position.x > origin.position.x) {
-        connection.layer.firstChild.segments[1].point.x += origin.firstChild.bounds.width / 2;
-        destination_point.x += origin.firstChild.bounds.width / 2;
-      } else {
-        connection.layer.firstChild.segments[1].point.x -= origin.firstChild.bounds.width / 2;
-        destination_point.x -= origin.firstChild.bounds.width / 2;
-      }
-
-      if(connection.from.y > origin.position.y) {
-        connection.layer.firstChild.segments[1].point.y -= origin.firstChild.bounds.height / 2;
-        destination_point.y -= origin.firstChild.bounds.height / 2;
-      } else {
-        connection.layer.firstChild.segments[1].point.y += origin.firstChild.bounds.height / 2;
-        destination_point.y += origin.firstChild.bounds.height / 2;
-      }
     }
 
+    // remove the original line
+    connection.layer.firstChild.remove();
+
+    // now adjust for rectangle edges
+    if(origin_point.x > destination_point.x) {
+      origin_point.x -= origin.firstChild.bounds.width / 2;
+      destination_point.x += origin.firstChild.bounds.width / 2;
+    } else {
+      origin_point.x += origin.firstChild.bounds.width / 2;
+      destination_point.x -= origin.firstChild.bounds.width / 2;
+    }
+
+    // redraw the original line
+    var new_connection = new Path.Line(origin_point, destination_point);
+
+    new_connection.strokeColor = 'black';
+    new_connection.strokeWidth = 3;
+    connection.layer.addChild(new_connection);
+
     // redraw the arrow
-    connection.layer.lastChild.remove();
+    connection.layer.firstChild.remove();
     var mid_point = new Point((origin_point.x + destination_point.x) / 2, (origin_point.y + destination_point.y) / 2);
 
     var arrow = new Point(destination_point.x - origin_point.x, destination_point.y - origin_point.y);
@@ -269,16 +256,6 @@ var panAndZoom = {
       }
       return oldZoom;
     },
-    // StableZoom.prototype.changeZoom = function(oldZoom, delta, c, p) {
-    //   var a, beta, newZoom, pc;
-    //   newZoom = StableZoom.__super__.changeZoom.call(this, oldZoom, delta);
-    //   beta = oldZoom / newZoom;
-    //   pc = p.subtract(c);
-    //   a = p.subtract(pc.multiply(beta)).subtract(c);
-    //   return [newZoom, a];
-    // };
-    //
-    // return StableZoom;
     changeCenter: function(oldCenter, deltaX, deltaY, factor) {
       var offset;
       offset = new paper.Point(deltaX, deltaY);
@@ -305,6 +282,18 @@ $(function() {
     paper.install(window);
     $.getJSON( jsonURL, function (data){
         paper.setup('network_canvas');
+
+        //paper.project.activeLayer.transform( new Matrix(1,0,0,-1,view.center.x, view.center.y) );
+        console.log(paper.view.size);
+        console.log(paper.view.zoom);
+        console.log(paper.view.center);
+
+        paper.view.center = new Point(data.game.pan_x_position, data.game.pan_y_position)
+        if(data.game.zoom !== 0) paper.view.zoom = data.game.zoom;
+
+        console.log(paper.view.size);
+        console.log(paper.view.zoom);
+        console.log(paper.view.center);
 
         current_game = drawGame(data.game);
 
@@ -355,9 +344,6 @@ $(function() {
           });
         });
 
-
-        paper.view.center = new Point(data.game.pan_x_position, data.game.pan_y_position)
-        if(data.game.zoom !== 0) paper.view.zoom = data.game.zoom;
         paper.view.update();
 
         paper.view.on("mousedown", function(event) {
@@ -440,7 +426,8 @@ $(function() {
           } else if(drag_item) {
             $('#network_canvas').css('cursor','grabbing');
             // drag an item around
-            drag_item.position = panAndZoom.changeCenter(drag_item.position, event.delta.x, event.delta.y, 1.0);
+            drag_item.firstChild.position = panAndZoom.changeCenter(drag_item.firstChild.position, event.delta.x, event.delta.y, 1.0);
+
             if(drag_item.connections.length > 0) {
               redraw_connections(drag_item);
             }
@@ -471,10 +458,13 @@ $(function() {
 
         paper.view.on("mouseup", function(event) {
           // reset any dragging/panning/zooming that may have occured
-          pan_view = false;
-          zoom_view = false;
 
-          if(creating_new_path) {
+          if (pan_view) {
+            paper.view.center = new Point(parseInt(paper.view.center.x, 10), parseInt(paper.view.center.y, 10))
+            pan_view = false;
+          } else if (zoom_view) {
+            zoom_view = false;
+          } else if(creating_new_path) {
             var hitOptions = { fill: true, stroke: false, segments: false, tolerance: 0, bounds: false };
             var hitResult = paper.project.hitTest(event.point, hitOptions);
 
@@ -508,6 +498,10 @@ $(function() {
 
           } else if(drag_item) {
             $('#network_canvas').css('cursor','grab');
+            drag_item.firstChild.position = new Point(parseInt(drag_item.firstChild.position.x, 10), parseInt(drag_item.firstChild.position.y, 10));
+            console.log(drag_item.position);
+            console.log(drag_item.firstChild.position);
+
             drag_item = null;
           }
 
@@ -532,12 +526,12 @@ $(function() {
 
     $.each(paper.project.layers, function(index, layer) {
       if("game_id" in layer) {
-        json_payload.games.x = layer.position.x - layer.bounds.width / 2;
-        json_payload.games.y = layer.position.y - layer.bounds.height / 2;
+        json_payload.games.x = layer.firstChild.position.x;
+        json_payload.games.y = layer.firstChild.position.y;
       } else if("step_id" in layer) {
-        json_payload.games.steps.push({ id: layer.step_id, x_position: layer.position.x - layer.bounds.width / 2, y_position: layer.position.y - layer.bounds.height / 2})
+        json_payload.games.steps.push({ id: layer.step_id, x_position: layer.firstChild.position.x, y_position: layer.firstChild.position.y})
       } else if("decision_id" in layer) {
-        json_payload.games.decisions.push({ id: layer.decision_id, x_position: layer.position.x - layer.bounds.width / 2, y_position: layer.position.y - layer.bounds.height / 2 })
+        json_payload.games.decisions.push({ id: layer.decision_id, x_position: layer.firstChild.position.x, y_position: layer.firstChild.position.y })
       }
     });
 
@@ -554,6 +548,10 @@ $(function() {
         method: "PUT",
         data: json_payload,
       }).done(function() {
+        $("<div id='flashes'>" +
+          "<div class='flash flash_notice'>Layout saved</div>" +
+        "</div>").insertAfter("#title_bar");
+        setTimeout( function(){$("#flashes").slideUp();} , 4000);
       }).error(function(error) {
         alert("error: " + error);
         console.log(error);
