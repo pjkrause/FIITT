@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160529090521) do
+ActiveRecord::Schema.define(version: 20160529103638) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -61,20 +61,20 @@ ActiveRecord::Schema.define(version: 20160529090521) do
     t.integer  "days"
     t.integer  "next_step"
     t.integer  "step_id"
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-    t.integer  "x_position", default: 0
-    t.integer  "y_position", default: 0
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+    t.float    "x_position", default: 0.0
+    t.float    "y_position", default: 0.0
   end
 
   create_table "games", force: :cascade do |t|
     t.string   "title"
     t.text     "description"
     t.integer  "first_step"
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
-    t.integer  "x_position",  default: 0
-    t.integer  "y_position",  default: 0
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.float    "x_position",  default: 0.0
+    t.float    "y_position",  default: 0.0
   end
 
   create_table "players", force: :cascade do |t|
@@ -123,14 +123,14 @@ ActiveRecord::Schema.define(version: 20160529090521) do
   create_table "steps", force: :cascade do |t|
     t.text     "general_message"
     t.text     "status_message"
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
     t.integer  "game_id"
-    t.hstore   "decision_table",  default: {}, null: false
+    t.hstore   "decision_table",  default: {},  null: false
     t.text     "guidance"
     t.integer  "default_step"
-    t.integer  "x_position",      default: 0
-    t.integer  "y_position",      default: 0
+    t.float    "x_position",      default: 0.0
+    t.float    "y_position",      default: 0.0
   end
 
 end
