@@ -65,7 +65,9 @@ var drawGame = function(game) {
   // Add the paths to the layer:
   layer.addChild(rectangle_path);
   layer.addChild(game_text);
+  layer.connections = [];
 
+  return layer;
 }
 
 var drawStep = function(step) {
@@ -295,16 +297,20 @@ $(function() {
   if(current_path.length > 3 && current_path.split( '/' )[4] === "edit") {
     var current_game_id = current_path.split( '/' )[3];
     var jsonURL = "/games/" + current_game_id + ".json";
-    var current_step, current_decision;
+    var first_step, current_game, current_step, current_decision;
     paper.install(window);
     $.getJSON( jsonURL, function (data){
         paper.setup('network_canvas');
 
-        drawGame(data.game);
+        current_game = drawGame(data.game);
 
         //draw the steps for this game
         $.each(data.steps, function(index, step) {
           current_step = drawStep(step);
+
+          if(step.id === data.game.first_step) {
+            first_step = current_step;
+          }
 
           $.each(step.decisions, function(index, decision) {
             current_decision = drawDecision(decision)
@@ -314,11 +320,16 @@ $(function() {
 
         });
 
+        drawConnection(current_game, first_step);
+
         // link up decisions to next steps
         $.each(data.steps, function(index, step) {
 
         })
 
+        console.log(data.game);
+        paper.view.center = new Point(data.game.pan_x_position, data.game.pan_y_position)
+        if(data.game.zoom !== 0) paper.view.zoom = data.game.zoom;
         paper.view.update();
 
         paper.view.on("mousedown", function(event) {
@@ -473,7 +484,10 @@ $(function() {
     console.log("saving game layout");
     var json_payload = {
       games: {
-        id: 1,
+        id: null,
+        pan_x: paper.view.center.x,
+        pan_y: paper.view.center.y,
+        zoom: paper.view.zoom,
         steps: [],
         decisions: []
       }
@@ -492,6 +506,8 @@ $(function() {
     if(current_path.length > 3 && current_path.split( '/' )[4] === "edit") {
       var current_game_id = current_path.split( '/' )[3];
       var jsonURL = "/games/" + current_game_id + "/game_layout";
+
+      json_payload.games.id = current_game_id;
 
       $.ajax({
         url: jsonURL,

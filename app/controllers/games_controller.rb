@@ -43,6 +43,28 @@ class GamesController < ApplicationController
       end
     end
 
+    if games_params[:pan_x] || games_params[:pan_y] || games_params[:zoom]
+      game_to_update = Game.find(games_params[:id])
+
+      if game_to_update
+        if games_params[:pan_x]
+          game_to_update.pan_x_position = games_params[:pan_x]
+        end
+        if games_params[:pan_y]
+          game_to_update.pan_y_position = games_params[:pan_y]
+        end
+        if games_params[:zoom]
+          game_to_update.zoom = games_params[:zoom]
+        end
+
+        unless game_to_update.save
+          errors << "game_id #{games_params[:id]}: #{game_to_update.errors.full_messages}"
+        end
+      else
+        errors << "game_id #{games_params[:id]}: not found"
+      end
+    end
+
     if errors.count == 0
       render json: :success
     else
@@ -53,6 +75,6 @@ class GamesController < ApplicationController
   private
 
   def games_params
-    params.require(:games).permit(:id, steps: [:id, :x_position, :y_position], decisions: [:id, :x_position, :y_position])
+    params.require(:games).permit(:id, :pan_x, :pan_y, :zoom, steps: [:id, :x_position, :y_position], decisions: [:id, :x_position, :y_position])
   end
 end
