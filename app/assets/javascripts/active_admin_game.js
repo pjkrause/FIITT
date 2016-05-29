@@ -61,12 +61,15 @@ var drawGame = function(game) {
   game_text.fitBounds(rectangle_path.bounds);
 
   rectangle_path.fillColor = '#505050';
+  rectangle_path.strokeColor = '#FF7260';
 
   // Add the paths to the layer:
   layer.addChild(rectangle_path);
   layer.addChild(game_text);
   layer.connections = [];
   layer.game_id = game.id;
+  layer.title = game.title;
+  layer.description = game.description;
 
   return layer;
 }
@@ -328,7 +331,7 @@ $(function() {
 
         })
 
-        console.log(data.game);
+
         paper.view.center = new Point(data.game.pan_x_position, data.game.pan_y_position)
         if(data.game.zoom !== 0) paper.view.zoom = data.game.zoom;
         paper.view.update();
@@ -336,8 +339,6 @@ $(function() {
         paper.view.on("mousedown", function(event) {
 
           if(event.modifiers.alt || event.modifiers.option) {
-            console.log("zoom");
-            console.log(event);
             zoom_view = true;
             $('#network_canvas').css('cursor','zoom-in');
           } else {
@@ -357,12 +358,21 @@ $(function() {
                 hitResult.item.layer.firstChild.strokeWidth = 3;
 
                 // update the form with the details for this item
-                if("step_id" in currently_selected_item) {
+                if("game_id" in currently_selected_item) {
+                  $("#game_form").show();
+                  $("#step_form").hide();
+                  $("#decision_form").hide();
+                  $("p#game_id").text(currently_selected_item.game_id);
+                  $("textarea#title").val(currently_selected_item.title);
+                  $("textarea#description").val(currently_selected_item.description);
+                } else if("step_id" in currently_selected_item) {
+                  $("#game_form").hide();
                   $("#step_form").show();
                   $("#decision_form").hide();
                   $("p#step_id").text(currently_selected_item.step_id);
                   $("textarea#status_message").val(currently_selected_item.status_message);
                 } else {
+                  $("#game_form").hide();
                   $("#step_form").hide();
                   $("#decision_form").show();
                   $("p#decision_id").text(currently_selected_item.decision_id);
@@ -482,7 +492,7 @@ $(function() {
   }
 
   $("#save_game_layout").on("click", function() {
-    console.log("saving game layout");
+
     var json_payload = {
       games: {
         id: null,

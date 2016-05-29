@@ -1,6 +1,28 @@
 <canvas id="network_canvas" resize style="background: grey;"></canvas>
 <button id="save_game_layout">Save Game Layout</button>
 <br /><br />
+<%=form_for :game, html: { id: "game_form", style: "display: none"} do |f| %>
+  <fieldset class="inputs">
+    <legend>
+      <span>Game details</span>
+    </legend>
+    <ol>
+      <li>
+        <%= f.label "game id" %>
+        <p id="game_id"></p>
+      </li>
+      <li id="title" class="input required stringish">
+        <%= f.label :title %>
+        <%= f.text_area :title, :size=>"45",:id=>"title" %>
+      </li>
+      <li id="description" class="input required stringish">
+        <%= f.label :description %>
+        <%= f.text_area :description, :size=>"45",:id=>"description" %>
+      </li>
+    </ol>
+    <%= submit_tag("Update Step") %>
+  </fieldset>
+<% end %>
 <%=form_for :step, html: { id: "step_form", style: "display: none"} do |f| %>
   <fieldset class="inputs">
     <legend>
@@ -11,7 +33,7 @@
         <%= f.label "step id" %>
         <p id="step_id"></p>
       </li>
-      <li id="status_message" class="input required stringish">
+      <li class="input required stringish">
         <%= f.label :status_message %>
         <%= f.text_area :status_message, :size=>"45",:id=>"status_message" %>
       </li>
@@ -29,7 +51,7 @@
         <%= f.label "decision id" %>
         <p id="decision_id"></p>
       </li>
-      <li id="status_message" class="input required stringish">
+      <li class="input required stringish">
         <%= f.label :choice %>
         <%= f.text_area :choice, :size=>"45",:id=>"choice" %>
       </li>
