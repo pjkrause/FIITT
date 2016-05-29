@@ -127,7 +127,7 @@ var drawDecision = function(decision) {
   layer.addChild(rectangle_path);
   layer.addChild(decision_text);
 
-  layer.decision_message = decision.choice;
+  layer.choice = decision.choice;
   layer.connections = [];
   layer.decision_id = decision.id
 
@@ -345,7 +345,18 @@ $(function() {
                 hitResult.item.layer.firstChild.strokeWidth = 3;
 
                 // update the form with the details for this item
-                $("textarea#status_message").val(currently_selected_item.status_message)
+                if("step_id" in currently_selected_item) {
+                  $("#step_form").show();
+                  $("#decision_form").hide();
+                  $("p#step_id").text(currently_selected_item.step_id);
+                  $("textarea#status_message").val(currently_selected_item.status_message);
+                } else {
+                  $("#step_form").hide();
+                  $("#decision_form").show();
+                  $("p#decision_id").text(currently_selected_item.decision_id);
+                  $("textarea#choice").val(currently_selected_item.choice);
+                }
+
 
                 if(event.modifiers.shift) {
                   $('#network_canvas').css('cursor','crosshair');
@@ -374,7 +385,7 @@ $(function() {
           // handler for mousemovent events
           if(pan_view === true) {
             // pan the view around
-            paper.view.center = panAndZoom.changeCenter(view.center, event.delta.x, event.delta.y, 0.6);
+            paper.view.center = panAndZoom.changeCenter(view.center, -event.delta.x, -event.delta.y, 1.0);
 
           } else if(zoom_view === true) {
             // zoom in or out
