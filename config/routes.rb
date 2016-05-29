@@ -11,8 +11,9 @@ Rails.application.routes.draw do
   # resources :steps
   resources :games, only: [:show] do
     get 'games' => 'steps#games'
+    put 'game_layout', on: :member, to: 'games#update_layout'
   end
-  
+
   get 'about' => 'steps#about'
   get 'player' => 'steps#player'
   get 'start/:id' => 'steps#start'
