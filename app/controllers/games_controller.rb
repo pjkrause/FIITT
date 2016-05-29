@@ -43,7 +43,7 @@ class GamesController < ApplicationController
       end
     end
 
-    if games_params[:pan_x] || games_params[:pan_y] || games_params[:zoom]
+    if games_params[:pan_x] || games_params[:pan_y] || games_params[:zoom] || games_params[:x] || games_params[:y]
       game_to_update = Game.find(games_params[:id])
 
       if game_to_update
@@ -55,6 +55,12 @@ class GamesController < ApplicationController
         end
         if games_params[:zoom]
           game_to_update.zoom = games_params[:zoom]
+        end
+        if games_params[:x]
+          game_to_update.x_position = games_params[:x]
+        end
+        if games_params[:y]
+          game_to_update.y_position = games_params[:y]
         end
 
         unless game_to_update.save
@@ -75,6 +81,6 @@ class GamesController < ApplicationController
   private
 
   def games_params
-    params.require(:games).permit(:id, :pan_x, :pan_y, :zoom, steps: [:id, :x_position, :y_position], decisions: [:id, :x_position, :y_position])
+    params.require(:games).permit(:id, :x, :y, :pan_x, :pan_y, :zoom, steps: [:id, :x_position, :y_position], decisions: [:id, :x_position, :y_position])
   end
 end
