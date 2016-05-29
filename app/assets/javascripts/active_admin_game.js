@@ -327,7 +327,7 @@ $(function() {
             console.log("zoom");
             console.log(event);
             zoom_view = true;
-
+            $('#network_canvas').css('cursor','zoom-in');
           } else {
 
             var hitOptions = { fill: true, stroke: true, segments: true, tolerance: 0, bounds: true };
@@ -348,6 +348,7 @@ $(function() {
                 $("textarea#status_message").val(currently_selected_item.status_message)
 
                 if(event.modifiers.shift) {
+                  $('#network_canvas').css('cursor','crosshair');
                   var layer = hitResult.item.layer;
                   layer.bringToFront();
                   path = new Path.Line(event.point, event.point);
@@ -380,6 +381,7 @@ $(function() {
             paper.view.zoom = panAndZoom.changeZoom(view.zoom, event.delta.y);
 
           } else if(drag_item) {
+            $('#network_canvas').css('cursor','grabbing');
             // drag an item around
             drag_item.position = panAndZoom.changeCenter(drag_item.position, event.delta.x, event.delta.y, 1.0);
             if(drag_item.connections.length > 0) {
@@ -401,6 +403,10 @@ $(function() {
                 // if this is text then show the rectangle path as selected
                 event.target.layer.firstChild.selected = true;
               }
+
+              $('#network_canvas').css('cursor','grab');
+            } else {
+              $('#network_canvas').css('cursor','move');
             }
 
           }
@@ -410,7 +416,6 @@ $(function() {
           // reset any dragging/panning/zooming that may have occured
           pan_view = false;
           zoom_view = false;
-          drag_item = null;
 
           if(creating_new_path) {
             var hitOptions = { fill: true, stroke: false, segments: false, tolerance: 0, bounds: false };
@@ -434,12 +439,19 @@ $(function() {
                   }
                 }
               }
+
+              $('#network_canvas').css('cursor','grab');
             } else {
+              $('#network_canvas').css('cursor','move');
             }
 
             creating_new_path = false;
             new_path.remove();
             new_path = null;
+
+          } else if(drag_item) {
+            $('#network_canvas').css('cursor','grab');
+            drag_item = null;
           }
 
         });
