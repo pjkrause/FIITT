@@ -1,7 +1,7 @@
 <canvas id="network_canvas" resize style="background: grey;"></canvas>
 <button id="save_game_layout">Save Game Layout</button>
 <br /><br />
-<%=form_for :game, html: { id: "game_form", style: "display: none"} do |f| %>
+<%= semantic_form_for(:game, html: { id: "game_form", style: "display: none"}) do |f| %>
   <fieldset class="inputs">
     <legend>
       <span>Game details</span>
@@ -10,6 +10,7 @@
       <li>
         <%= f.label "game id" %>
         <p id="game_id"></p>
+        <%= f.hidden_field :id, :id => "id" %>
       </li>
       <li id="title" class="input required stringish">
         <%= f.label :title %>
@@ -23,7 +24,7 @@
     <%= submit_tag("Update Step") %>
   </fieldset>
 <% end %>
-<%=form_for :step, html: { id: "step_form", style: "display: none"} do |f| %>
+<%= semantic_form_for(:step, html: { id: "step_form", style: "display: none"}) do |f| %>
   <fieldset class="inputs">
     <legend>
       <span>Step details</span>
@@ -32,6 +33,7 @@
       <li>
         <%= f.label "step id" %>
         <p id="step_id"></p>
+        <%= f.hidden_field :id, :id => "id" %>
       </li>
       <li class="input required stringish">
         <%= f.label :status_message %>
@@ -41,7 +43,7 @@
     <%= submit_tag("Update Step") %>
   </fieldset>
 <% end %>
-<%=form_for :decision, html: { id: "decision_form", style: "display: none"} do |f| %>
+<%= semantic_form_for(:decision, html: { id: "decision_form", style: "display: none"}) do |f| %>
   <fieldset class="inputs">
     <legend>
       <span>Decision details</span>
@@ -50,6 +52,7 @@
       <li>
         <%= f.label "decision id" %>
         <p id="decision_id"></p>
+        <%= f.hidden_field :id, :id => "id" %>
       </li>
       <li class="input required stringish">
         <%= f.label :choice %>
