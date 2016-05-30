@@ -50,7 +50,7 @@ var drawGame = function(game) {
   var rectangle = new Rectangle(new Point(0, 0), new Point(150, 100));
   var rectangle_path = new Path.Rectangle(rectangle);
 
-  var game_title = game.title.length > 0 ? formatText(game.title) : ""
+  var game_title = game.title ? formatText(game.title) : ""
 
   var game_text = new PointText({
     point: [0, 80],
@@ -121,7 +121,7 @@ var drawDecision = function(decision) {
   var rectangle = new Rectangle(new Point(0, 0), new Point(150, 100));
   var rectangle_path = new Path.Rectangle(rectangle);
 
-  var decision_choice = decision.choice.length > 0 ? formatText(decision.choice) : ""
+  var decision_choice = decision.choice ? formatText(decision.choice) : ""
 
   var decision_text = new PointText({
     point: [0, 80],
@@ -294,36 +294,6 @@ $(function() {
         console.log(paper.view.center);
 
         draw_game_layout(data);
-
-        // link up decisions to next steps
-        $.each(data.steps, function(index, step) {
-          $.each(step.decisions, function(index, decision) {
-
-            // find the decision display item
-            $.each(paper.project.layers, function(index, layer) {
-              if("decision_id" in layer) {
-                if(layer.decision_id === decision.id) {
-                  current_decision = layer;
-                  console.log("found match");
-                }
-              }
-            });
-
-            // find the next step display item
-            $.each(paper.project.layers, function(index, layer) {
-              if("step_id" in layer) {
-                if(layer.step_id === decision.next_step) {
-                  current_step = layer;
-                  console.log("found match");
-                }
-              }
-            });
-
-            // link up the decision to the next step
-            drawConnection(current_decision, current_step)
-          });
-        });
-
         paper.view.update();
 
         paper.view.on("mousedown", function(event) {
@@ -574,6 +544,61 @@ $(function() {
     }
   });
 
+  $("#add_new_decision").on("click", function() {
+    var json_payload = {
+      games: {
+        id: null,
+        item_type: "decision"
+      }
+    };
+
+    var current_path = $(location).attr('pathname');
+
+    if(current_path.length > 3 && current_path.split( '/' )[4] === "edit") {
+      var current_game_id = current_path.split( '/' )[3];
+      var jsonURL = "/games/" + current_game_id + "/add_layout_item";
+
+      json_payload.games.id = current_game_id;
+
+      $.ajax({
+        url: jsonURL,
+        method: "POST",
+        data: json_payload,
+      }).done(function(data) {
+
+        // set the new step as currently selected
+        data.decision.x_position = paper.view.center.x;
+        data.decision.y_position = paper.view.center.y;
+
+        if(currently_selected_item) {
+          currently_selected_item.firstChild.strokeWidth = 0;
+        }
+
+        currently_selected_item = drawDecision(data.decision);
+        currently_selected_item = currently_selected_item.firstChild.layer;
+        console.log(currently_selected_item);
+        currently_selected_item.layer.firstChild.strokeWidth = 3;
+
+        // show the form for this step
+        $("#game_form").hide();
+        $("#step_form").hide();
+        $("#decision_form").show();
+        $("input#id").val(currently_selected_item.decision_id);
+        $("p#decision_id").text(currently_selected_item.decision_id);
+        $("textarea#choice").val(currently_selected_item.choice);
+
+        $("<div id='flashes'>" +
+          "<div class='flash flash_notice'>Layout item added</div>" +
+        "</div>").insertAfter("#title_bar");
+        setTimeout( function(){$("#flashes").slideUp();} , 4000);
+      }).error(function(error) {
+        alert("error: " + error);
+        console.log(error);
+      });
+    }
+  });
+
+
   function draw_game_layout(data) {
     var current_game, current_step, first_step, current_decision;
 
@@ -598,6 +623,37 @@ $(function() {
     if(first_step) {
       drawConnection(current_game, first_step);
     }
+
+    // link up decisions to next steps
+    $.each(data.steps, function(index, step) {
+      if (step.next_step) {
+        $.each(step.decisions, function(index, decision) {
+
+          // find the decision display item
+          $.each(paper.project.layers, function(index, layer) {
+            if("decision_id" in layer) {
+              if(layer.decision_id === decision.id) {
+                current_decision = layer;
+                console.log("found match");
+              }
+            }
+          });
+
+          // find the next step display item
+          $.each(paper.project.layers, function(index, layer) {
+            if("step_id" in layer) {
+              if(layer.step_id === decision.next_step) {
+                current_step = layer;
+                console.log("found match");
+              }
+            }
+          });
+
+          // link up the decision to the next step
+          drawConnection(current_decision, current_step)
+        });
+      }
+    });
   }
 
   function save_game_layout() {

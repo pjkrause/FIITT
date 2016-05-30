@@ -194,20 +194,31 @@ class GamesController < ApplicationController
     if games_params[:item_type]
       if games_params[:item_type] == "step"
         new_step = @game.steps.build({})
-        puts new_step.inspect
         unless new_step.save
-          puts new_step.errors.full_messages
           errors << "Error creating new step: #{new_step.errors.full_messages}"
+        end
+      end
+
+      if games_params[:item_type] == "decision"
+        new_decision = Decision.new
+        unless new_decision.save
+          errors << "Error creating new decision: #{new_decision.errors.full_messages}"
         end
       end
     end
 
     if errors.count == 0
-      puts new_step.inspect
-      render status: :created, json: {
-        message: "Successfully created new step",
-        step: StepSerializer.new(new_step, {})
-      }.to_json
+      if games_params[:item_type] == "step"
+        render status: :created, json: {
+          message: "Successfully created new step",
+          step: StepSerializer.new(new_step, {})
+        }.to_json
+      elsif games_params[:item_type] == "decision"
+        render status: :created, json: {
+          message: "Successfully created new step",
+          decision: new_decision
+        }.to_json
+      end
     else
       render json: { errors: errors }, status: :unprocessable_entity
     end
