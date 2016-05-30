@@ -12,7 +12,9 @@ Rails.application.routes.draw do
   resources :games, only: [:show] do
     put 'game_layout', on: :member, to: 'games#update_layout'
   end
-  
+
+  post 'admin/games/:id/edit' => 'games#update'
+
   get 'games' => 'steps#games'
   get 'about' => 'steps#about'
   get 'player' => 'steps#player'
