@@ -4,7 +4,6 @@ class GamesController < ApplicationController
 
     respond_to do |format|
       format.json { render json: GameSerializer.new(@game, {}) }
-      #format.json { render json: { game: @game, steps: @game_steps.to_json(:include => :decisions)}, status: :ok }
     end
   end
 
@@ -224,13 +223,59 @@ class GamesController < ApplicationController
     end
   end
 
+  def add_connection
+    errors = []
+
+    @game = Game.find(params[:id])
+
+    if games_params[:first_step]
+      @game.update({first_step: games_params[:first_step]})
+    end
+
+    if games_params[:steps]
+      games_params[:steps].each do |step|
+        step = step[1]
+        step_to_update = Step.find(step[:id].to_i)
+        if step_to_update
+          step_to_update.decision_table = step[:decision_table]
+          unless step_to_update.save
+            errors << "step_id #{step[:id]}: #{step_to_update.errors.full_messages}"
+          end
+        else
+          errors << "step_id #{step[:id]}: not found"
+        end
+      end
+    end
+
+    if games_params[:decisions]
+      games_params[:decisions].each do |decision|
+        decision = decision[1]
+        decision_to_update = Decision.find(decision[:id].to_i)
+        if decision_to_update
+          decision_to_update.next_step = decision[:next_step]
+          unless decision_to_update.save
+            errors << "decision_id #{decision[:id]}: #{decision_to_update.errors.full_messages}"
+          end
+        else
+          errors << "decision_id #{decision[:id]}: not found"
+        end
+      end
+    end
+
+    if errors.count == 0
+      render json: :success
+    else
+      render json: { errors: errors }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def games_params
     params.require(:games).permit(
-      :id, :x, :y, :pan_x, :pan_y, :zoom, :item_type,
-      steps: [:id, :x_position, :y_position],
-      decisions: [:id, :x_position, :y_position]
+      :id, :x, :y, :pan_x, :pan_y, :zoom, :item_type, :first_step,
+      steps: [:id, :x_position, :y_position, :decision_table],
+      decisions: [:id, :x_position, :y_position, :next_step]
     )
   end
 

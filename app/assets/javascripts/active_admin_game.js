@@ -112,6 +112,7 @@ var drawStep = function(step) {
   layer.status_message = status_message;
   layer.connections = [];
   layer.step_id = step.id
+  layer.decision_table = step.decision_table
 
   return layer;
 }
@@ -436,7 +437,7 @@ $(function() {
                   });
 
                   if(connection_already_found === false) {
-                    drawConnection(currently_selected_item, hitResult.item.parent)
+                    addNewConnection(currently_selected_item, hitResult.item.parent)
                   }
                 }
               }
@@ -467,7 +468,6 @@ $(function() {
 
           tool.onKeyUp = function(event) {
           	// When a key is released, set the content of the text item:
-          	console.log('The ' + event.key + ' key was released!');
 
           };
         }
@@ -626,9 +626,8 @@ $(function() {
 
     // link up decisions to next steps
     $.each(data.steps, function(index, step) {
-      if (step.next_step) {
-        $.each(step.decisions, function(index, decision) {
-
+      $.each(step.decisions, function(index, decision) {
+        if (decision.next_step) {
           // find the decision display item
           $.each(paper.project.layers, function(index, layer) {
             if("decision_id" in layer) {
@@ -651,8 +650,8 @@ $(function() {
 
           // link up the decision to the next step
           drawConnection(current_decision, current_step)
-        });
-      }
+        }
+      });
     });
   }
 
@@ -704,6 +703,60 @@ $(function() {
       });
     }
   };
+
+  function addNewConnection(origin, destination) {
+    var json_payload = {
+      games: {
+        id: null,
+        first_step: null,
+        steps: [],
+        decisions: []
+      }
+    };
+
+    if("game_id" in origin && "step_id" in destination) {
+      json_payload.games.first_step = destination.step_id;
+    } else {
+      json_payload.games.first_step = origin.first_step;
+    }
+
+    if("step_id" in origin && "decision_id" in destination) {
+      console.log(origin.decision_table);
+      var decision_key = "{}"
+      if(origin.decision_table === "{}") {
+        var decision_key = '\"[' + destination.decision_id + ',0]\"=>\"0\"'
+      }
+      json_payload.games.steps.push({id: origin.step_id, decision_table: decision_key})
+    }
+
+    if("decision_id" in origin && "step_id" in destination) {
+      json_payload.games.decisions.push({id: origin.decision_id, next_step: destination.step_id})
+    }
+
+    var current_path = $(location).attr('pathname');
+
+    if(current_path.length > 3 && current_path.split( '/' )[4] === "edit") {
+      var current_game_id = current_path.split( '/' )[3];
+      var jsonURL = "/games/" + current_game_id + "/game_connections";
+
+      json_payload.games.id = current_game_id;
+
+      $.ajax({
+        url: jsonURL,
+        method: "POST",
+        data: json_payload,
+      }).done(function() {
+        drawConnection(origin, destination)
+        $("<div id='flashes'>" +
+          "<div class='flash flash_notice'>Connection updated</div>" +
+        "</div>").insertAfter("#title_bar");
+        setTimeout( function(){$("#flashes").slideUp();} , 4000);
+      }).error(function(error) {
+        alert("error: " + error);
+        console.log(error);
+      });
+    }
+  }
 
   function delete_item(item) {
     var json_payload = {
