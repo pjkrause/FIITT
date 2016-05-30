@@ -368,18 +368,21 @@ $(function() {
                   $("#step_form").hide();
                   $("#decision_form").hide();
                   $("p#game_id").text(currently_selected_item.game_id);
+                  $("input#id").val(currently_selected_item.game_id);
                   $("textarea#title").val(currently_selected_item.title);
                   $("textarea#description").val(currently_selected_item.description);
                 } else if("step_id" in currently_selected_item) {
                   $("#game_form").hide();
                   $("#step_form").show();
                   $("#decision_form").hide();
+                  $("input#id").val(currently_selected_item.step_id);
                   $("p#step_id").text(currently_selected_item.step_id);
                   $("textarea#status_message").val(currently_selected_item.status_message);
                 } else {
                   $("#game_form").hide();
                   $("#step_form").hide();
                   $("#decision_form").show();
+                  $("input#id").val(currently_selected_item.decision_id);
                   $("p#decision_id").text(currently_selected_item.decision_id);
                   $("textarea#choice").val(currently_selected_item.choice);
                 }
