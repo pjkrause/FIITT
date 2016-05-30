@@ -14,11 +14,11 @@
       </li>
       <li id="title" class="input required stringish">
         <%= f.label :title %>
-        <%= f.text_area :title, :size=>"45",:id=>"title" %>
+        <%= f.text_area :title,:id=>"title", :cols=>"45", :rows=>"5" %>
       </li>
       <li id="description" class="input required stringish">
         <%= f.label :description %>
-        <%= f.text_area :description, :size=>"45",:id=>"description" %>
+        <%= f.text_area :description,:id=>"description", :cols=>"45", :rows=>"15" %>
       </li>
     </ol>
     <%= submit_tag("Update Step") %>
@@ -37,7 +37,7 @@
       </li>
       <li class="input required stringish">
         <%= f.label :status_message %>
-        <%= f.text_area :status_message, :size=>"45",:id=>"status_message" %>
+        <%= f.text_area :status_message,:id=>"status_message", :cols=>"45", :rows=>"10" %>
       </li>
     </ol>
     <%= submit_tag("Update Step") %>
@@ -56,7 +56,7 @@
       </li>
       <li class="input required stringish">
         <%= f.label :choice %>
-        <%= f.text_area :choice, :size=>"45",:id=>"choice" %>
+        <%= f.text_area :choice, :id=>"choice", :cols=>"45", :rows=>"10" %>
       </li>
     </ol>
     <%= submit_tag("Update Decision") %>
