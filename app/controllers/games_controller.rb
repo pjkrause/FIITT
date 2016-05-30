@@ -138,6 +138,44 @@ class GamesController < ApplicationController
     end
   end
 
+  def delete_layout_item
+    errors = []
+
+    if games_params[:steps]
+      games_params[:steps].each do |step|
+        step = step[1]
+        step_to_update = Step.find(step[:id].to_i)
+        if step_to_update
+          unless step_to_update.destroy
+            errors << "step_id #{step[:id]}: #{step_to_update.errors.full_messages}"
+          end
+        else
+          errors << "Step id #{step[:id]}: not found"
+        end
+      end
+    end
+
+    if games_params[:decisions]
+      games_params[:decisions].each do |decision|
+        decision = decision[1]
+        decision_to_update = Decision.find(decision[:id].to_i)
+        if decision_to_update
+          unless decision_to_update.destroy
+            errors << "decision_id #{decision[:id]}: #{decision_to_update.errors.full_messages}"
+          end
+        else
+          errors << "decision_id #{decision[:id]}: not found"
+        end
+      end
+    end
+
+    if errors.count == 0
+      render json: :success
+    else
+      render json: { errors: errors }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def games_params

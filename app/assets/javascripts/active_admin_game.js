@@ -508,11 +508,43 @@ $(function() {
           }
 
         });
+
+        // add keyboard handling
+        if(paper.tools.length === 0) {
+          tool = paper.tools.push(new Tool());
+
+          console.log(paper);
+          tool.onKeyDown = function(event) {
+            console.log(event);
+            event.preventDefault();
+          };
+
+          tool.onKeyUp = function(event) {
+          	// When a key is released, set the content of the text item:
+          	console.log('The ' + event.key + ' key was released!');
+            if (event.key === "backspace") {
+              if(currently_selected_item) {
+                var confirm_delete = confirm("Are you sure you want to delete this step and all it's connections?");
+                if (confirm_delete == true) {
+                    console.log("You pressed OK!");
+                    delete_item(currently_selected_item);
+                } else {
+                    console.log("You pressed Cancel!");
+                }
+              }
+            }
+            event.preventDefault();
+          };
+        }
+
     });
   }
 
   $("#save_game_layout").on("click", function() {
+    save_game_layout();
+  });
 
+  function save_game_layout() {
     var json_payload = {
       games: {
         id: null,
@@ -559,5 +591,44 @@ $(function() {
         console.log(error);
       });
     }
-  });
+  };
+
+  function delete_item(item) {
+    var json_payload = {
+      games: {
+        id: null,
+        steps: [],
+        decisions: []
+      }
+    };
+
+    if("step_id" in item) {
+      json_payload.games.steps.push({ id: item.step_id})
+    } else if("decision_id" in item) {
+      json_payload.games.decisions.push({ id: item.decision_id})
+    }
+
+    var current_path = $(location).attr('pathname');
+
+    if(current_path.length > 3 && current_path.split( '/' )[4] === "edit") {
+      var current_game_id = current_path.split( '/' )[3];
+      var jsonURL = "/games/" + current_game_id + "/delete_layout_item";
+
+      json_payload.games.id = current_game_id;
+
+      $.ajax({
+        url: jsonURL,
+        method: "DELETE",
+        data: json_payload,
+      }).done(function() {
+        $("<div id='flashes'>" +
+          "<div class='flash flash_notice'>Deleted successfully</div>" +
+        "</div>").insertAfter("#title_bar");
+        setTimeout( function(){$("#flashes").slideUp();} , 4000);
+      }).error(function(error) {
+        alert("error: " + error);
+        console.log(error);
+      });
+    }
+  }
 });
