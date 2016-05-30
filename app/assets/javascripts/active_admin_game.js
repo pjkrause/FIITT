@@ -50,7 +50,7 @@ var drawGame = function(game) {
   var rectangle = new Rectangle(new Point(0, 0), new Point(150, 100));
   var rectangle_path = new Path.Rectangle(rectangle);
 
-  game_title = formatText(game.title)
+  var game_title = game.title.length > 0 ? formatText(game.title) : ""
 
   var game_text = new PointText({
     point: [0, 80],
@@ -72,7 +72,7 @@ var drawGame = function(game) {
   layer.addChild(game_text);
   layer.connections = [];
   layer.game_id = game.id;
-  layer.title = game.title;
+  layer.title = game_title;
   layer.description = game.description;
 
   return layer;
@@ -87,7 +87,7 @@ var drawStep = function(step) {
   var rectangle = new Rectangle(new Point(0, 0), new Point(150, 100));
   var rectangle_path = new Path.Rectangle(rectangle);
 
-  status_message = formatText(step.status_message)
+  var status_message = step.status_message ? formatText(step.status_message) : ""
 
   var step_text = new PointText({
     point: [0, 80],
@@ -109,7 +109,7 @@ var drawStep = function(step) {
   layer.addChild(rectangle_path);
   layer.addChild(step_text);
 
-  layer.status_message = step.status_message;
+  layer.status_message = status_message;
   layer.connections = [];
   layer.step_id = step.id
 
@@ -121,11 +121,11 @@ var drawDecision = function(decision) {
   var rectangle = new Rectangle(new Point(0, 0), new Point(150, 100));
   var rectangle_path = new Path.Rectangle(rectangle);
 
-  decision_message = formatText(decision.choice)
+  var decision_choice = decision.choice.length > 0 ? formatText(decision.choice) : ""
 
   var decision_text = new PointText({
     point: [0, 80],
-    content: decision_message,
+    content: decision_choice,
     fillColor: 'black',
     fontFamily: 'Courier New',
     fontWeight: 'bold',
@@ -143,7 +143,7 @@ var drawDecision = function(decision) {
   layer.addChild(rectangle_path);
   layer.addChild(decision_text);
 
-  layer.choice = decision.choice;
+  layer.choice = decision_choice;
   layer.connections = [];
   layer.decision_id = decision.id
 
@@ -293,25 +293,7 @@ $(function() {
         console.log(paper.view.zoom);
         console.log(paper.view.center);
 
-        current_game = drawGame(data.game);
-
-        //draw the steps for this game
-        $.each(data.steps, function(index, step) {
-          current_step = drawStep(step);
-
-          if(step.id === data.game.first_step) {
-            first_step = current_step;
-          }
-
-          $.each(step.decisions, function(index, decision) {
-            current_decision = drawDecision(decision)
-            // link steps and decisions
-            drawConnection(current_step, current_decision)
-          });
-
-        });
-
-        drawConnection(current_game, first_step);
+        draw_game_layout(data);
 
         // link up decisions to next steps
         $.each(data.steps, function(index, step) {
@@ -513,27 +495,10 @@ $(function() {
         if(paper.tools.length === 0) {
           tool = paper.tools.push(new Tool());
 
-          console.log(paper);
-          tool.onKeyDown = function(event) {
-            console.log(event);
-            event.preventDefault();
-          };
-
           tool.onKeyUp = function(event) {
           	// When a key is released, set the content of the text item:
           	console.log('The ' + event.key + ' key was released!');
-            if (event.key === "backspace") {
-              if(currently_selected_item) {
-                var confirm_delete = confirm("Are you sure you want to delete this step and all it's connections?");
-                if (confirm_delete == true) {
-                    console.log("You pressed OK!");
-                    delete_item(currently_selected_item);
-                } else {
-                    console.log("You pressed Cancel!");
-                }
-              }
-            }
-            event.preventDefault();
+
           };
         }
 
@@ -543,6 +508,97 @@ $(function() {
   $("#save_game_layout").on("click", function() {
     save_game_layout();
   });
+
+  $("#remove_item").on("click", function () {
+    if(currently_selected_item) {
+      if("game_id" in currently_selected_item) {
+        alert("You cannot delete the game itself!  Cancelling delete.")
+      } else {
+        var confirm_delete = confirm("Are you sure you want to delete this step and all it's connections?");
+        if (confirm_delete == true) {
+            console.log("You pressed OK!");
+            delete_item(currently_selected_item);
+        } else {
+            console.log("You pressed Cancel!");
+        }
+      }
+    }
+  });
+
+  $("#add_new_step").on("click", function() {
+    var json_payload = {
+      games: {
+        id: null,
+        item_type: "step"
+      }
+    };
+
+    var current_path = $(location).attr('pathname');
+
+    if(current_path.length > 3 && current_path.split( '/' )[4] === "edit") {
+      var current_game_id = current_path.split( '/' )[3];
+      var jsonURL = "/games/" + current_game_id + "/add_layout_item";
+
+      json_payload.games.id = current_game_id;
+
+      $.ajax({
+        url: jsonURL,
+        method: "POST",
+        data: json_payload,
+      }).done(function(data) {
+        console.log(data.step);
+        // set the new step as currently selected
+        data.step.x_position = paper.view.center.x;
+        data.step.y_position = paper.view.center.y;
+
+        currently_selected_item = drawStep(data.step);
+        console.log(currently_selected_item);
+        currently_selected_item.layer.firstChild.strokeWidth = 3;
+
+        // show the form for this step
+        $("#game_form").hide();
+        $("#step_form").show();
+        $("#decision_form").hide();
+        $("input#id").val(currently_selected_item.step_id);
+        $("p#step_id").text(currently_selected_item.step_id);
+        $("textarea#status_message").val(currently_selected_item.status_message);
+
+        $("<div id='flashes'>" +
+          "<div class='flash flash_notice'>Layout item added</div>" +
+        "</div>").insertAfter("#title_bar");
+        setTimeout( function(){$("#flashes").slideUp();} , 4000);
+      }).error(function(error) {
+        alert("error: " + error);
+        console.log(error);
+      });
+    }
+  });
+
+  function draw_game_layout(data) {
+    var current_game, current_step, first_step, current_decision;
+
+    current_game = drawGame(data.game);
+
+    //draw the steps for this game
+    $.each(data.steps, function(index, step) {
+      current_step = drawStep(step);
+
+      if(step.id === data.game.first_step) {
+        first_step = current_step;
+      }
+
+      $.each(step.decisions, function(index, decision) {
+        current_decision = drawDecision(decision)
+        // link steps and decisions
+        drawConnection(current_step, current_decision)
+      });
+
+    });
+
+    if(first_step) {
+      drawConnection(current_game, first_step);
+    }
+  }
 
   function save_game_layout() {
     var json_payload = {
@@ -620,7 +676,11 @@ $(function() {
         url: jsonURL,
         method: "DELETE",
         data: json_payload,
-      }).done(function() {
+      }).done(function(data) {
+
+        paper.project.clear();
+        draw_game_layout(data.game);
+
         $("<div id='flashes'>" +
           "<div class='flash flash_notice'>Deleted successfully</div>" +
         "</div>").insertAfter("#title_bar");

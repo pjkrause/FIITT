@@ -141,12 +141,19 @@ class GamesController < ApplicationController
   def delete_layout_item
     errors = []
 
+    @game = Game.find(params[:id])
+
     if games_params[:steps]
       games_params[:steps].each do |step|
         step = step[1]
         step_to_update = Step.find(step[:id].to_i)
         if step_to_update
-          unless step_to_update.destroy
+          if step_to_update.destroy
+            if @game.first_step == step_to_update.id
+              @game.first_step = nil
+              @game.save
+            end
+          else
             errors << "step_id #{step[:id]}: #{step_to_update.errors.full_messages}"
           end
         else
@@ -170,7 +177,37 @@ class GamesController < ApplicationController
     end
 
     if errors.count == 0
-      render json: :success
+      render status: :ok, json: {
+        message: "Successfully deleted.",
+        game: GameSerializer.new(@game)
+      }.to_json
+    else
+      render json: { errors: errors }, status: :unprocessable_entity
+    end
+  end
+
+  def add_layout_item
+    errors = []
+
+    @game = Game.find(params[:id])
+
+    if games_params[:item_type]
+      if games_params[:item_type] == "step"
+        new_step = @game.steps.build({})
+        puts new_step.inspect
+        unless new_step.save
+          puts new_step.errors.full_messages
+          errors << "Error creating new step: #{new_step.errors.full_messages}"
+        end
+      end
+    end
+
+    if errors.count == 0
+      puts new_step.inspect
+      render status: :created, json: {
+        message: "Successfully created new step",
+        step: StepSerializer.new(new_step, {})
+      }.to_json
     else
       render json: { errors: errors }, status: :unprocessable_entity
     end
@@ -180,7 +217,7 @@ class GamesController < ApplicationController
 
   def games_params
     params.require(:games).permit(
-      :id, :x, :y, :pan_x, :pan_y, :zoom,
+      :id, :x, :y, :pan_x, :pan_y, :zoom, :item_type,
       steps: [:id, :x_position, :y_position],
       decisions: [:id, :x_position, :y_position]
     )
