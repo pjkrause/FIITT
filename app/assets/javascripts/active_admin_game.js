@@ -18,14 +18,17 @@ var formatText = function(raw_string) {
       start_position = unused_text_position;
     }
 
-    if( i == parseInt(raw_string.length / 20)) {
-      end_position = raw_string.length - 1;
+    if( i === parseInt(raw_string.length / 20)) {
+      end_position = raw_string.length;
     } else {
       end_position = start_position + 19;
     }
 
     last_space_position = start_position + raw_string.slice(start_position, end_position).lastIndexOf(" ")
-    if(last_space_position < end_position) {
+    if (last_space_position === -1) {
+      last_space_position = end_position;
+      unused_text_position = 0;
+    } else if (last_space_position < end_position) {
       unused_text_position = last_space_position;
     } else {
       unused_text_position = null;
