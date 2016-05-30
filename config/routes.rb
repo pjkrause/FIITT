@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   # resources :steps
   resources :games, only: [:show] do
     put 'game_layout', on: :member, to: 'games#update_layout'
+    delete 'delete_layout_item', on: :member, to: 'games#delete_layout_item'
   end
 
   post 'admin/games/:id/edit' => 'games#update'
