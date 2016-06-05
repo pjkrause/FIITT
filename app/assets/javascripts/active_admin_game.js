@@ -72,7 +72,7 @@ var drawGame = function(game) {
   layer.addChild(game_text);
   layer.connections = [];
   layer.game_id = game.id;
-  layer.title = game_title;
+  layer.title = game.title;
   layer.description = game.description;
 
   return layer;
@@ -80,10 +80,6 @@ var drawGame = function(game) {
 
 var drawStep = function(step) {
   var layer = new Layer();
-  if(step.id === 4) {
-    console.log(step.x_position);
-    console.log(step.y_position);
-  }
   var rectangle = new Rectangle(new Point(0, 0), new Point(150, 100));
   var rectangle_path = new Path.Rectangle(rectangle);
 
@@ -109,7 +105,7 @@ var drawStep = function(step) {
   layer.addChild(rectangle_path);
   layer.addChild(step_text);
 
-  layer.status_message = status_message;
+  layer.status_message = step.status_message;
   layer.connections = [];
   layer.step_id = step.id
   layer.decision_table = step.decision_table
@@ -144,7 +140,7 @@ var drawDecision = function(decision) {
   layer.addChild(rectangle_path);
   layer.addChild(decision_text);
 
-  layer.choice = decision_choice;
+  layer.choice = decision.choice;
   layer.connections = [];
   layer.decision_id = decision.id
 
@@ -282,17 +278,8 @@ $(function() {
     $.getJSON( jsonURL, function (data){
         paper.setup('network_canvas');
 
-        //paper.project.activeLayer.transform( new Matrix(1,0,0,-1,view.center.x, view.center.y) );
-        console.log(paper.view.size);
-        console.log(paper.view.zoom);
-        console.log(paper.view.center);
-
         paper.view.center = new Point(data.game.pan_x_position, data.game.pan_y_position)
         if(data.game.zoom !== 0) paper.view.zoom = data.game.zoom;
-
-        console.log(paper.view.size);
-        console.log(paper.view.zoom);
-        console.log(paper.view.center);
 
         draw_game_layout(data);
         paper.view.update();
@@ -454,8 +441,6 @@ $(function() {
           } else if(drag_item) {
             $('#network_canvas').css('cursor','grab');
             drag_item.firstChild.position = new Point(parseInt(drag_item.firstChild.position.x, 10), parseInt(drag_item.firstChild.position.y, 10));
-            console.log(drag_item.position);
-            console.log(drag_item.firstChild.position);
 
             drag_item = null;
           }
@@ -486,10 +471,7 @@ $(function() {
       } else {
         var confirm_delete = confirm("Are you sure you want to delete this step and all it's connections?");
         if (confirm_delete == true) {
-            console.log("You pressed OK!");
             delete_item(currently_selected_item);
-        } else {
-            console.log("You pressed Cancel!");
         }
       }
     }
@@ -516,13 +498,11 @@ $(function() {
         method: "POST",
         data: json_payload,
       }).done(function(data) {
-        console.log(data.step);
         // set the new step as currently selected
         data.step.x_position = paper.view.center.x;
         data.step.y_position = paper.view.center.y;
 
         currently_selected_item = drawStep(data.step);
-        console.log(currently_selected_item);
         currently_selected_item.layer.firstChild.strokeWidth = 3;
 
         // show the form for this step
@@ -576,8 +556,8 @@ $(function() {
 
         currently_selected_item = drawDecision(data.decision);
         currently_selected_item = currently_selected_item.firstChild.layer;
-        console.log(currently_selected_item);
-        currently_selected_item.layer.firstChild.strokeWidth = 3;
+
+        currently_selected_item.firstChild.strokeWidth = 3;
 
         // show the form for this step
         $("#game_form").hide();
@@ -600,7 +580,7 @@ $(function() {
 
 
   function draw_game_layout(data) {
-    var current_game, current_step, first_step, current_decision;
+    var current_game, current_step, first_step, decisions, current_decision,　default_step;
 
     current_game = drawGame(data.game);
 
@@ -609,50 +589,102 @@ $(function() {
       current_step = drawStep(step);
 
       if(step.id === data.game.first_step) {
-        first_step = current_step;
+        drawConnection(current_game, current_step);
       }
-
-      $.each(step.decisions, function(index, decision) {
-        current_decision = drawDecision(decision)
-        // link steps and decisions
-        drawConnection(current_step, current_decision)
-      });
-
     });
 
-    if(first_step) {
-      drawConnection(current_game, first_step);
-    }
+    // loop through again and add connections between steps
+    $.each(data.steps, function(index, step) {
+      decisions = []
+
+      $.each(step.decisions, function(index, decision) {
+        decisions.push(drawDecision(decision))
+      });
+
+      // link steps and decisions
+      if(step.decision_table.length > 0) {
+        $.each(step.decision_table, function(index, decision_row) {
+
+          $.each(paper.project.layers, function(index, layer) {
+            if("step_id" in layer) {
+              if(step.id === layer.step_id) {
+                current_step = layer;
+              }
+            }
+          });
+
+          // find the decision display item
+          $.each(decision_row.decisions, function(index, decision) {
+
+            $.each(paper.project.layers, function(index, layer) {
+              if("decision_id" in layer) {
+                if(layer.decision_id === parseInt(decision, 10)) {
+                  current_decision = layer;
+                  drawConnection(current_step, current_decision);
+                }
+              }
+            });
+
+
+          });
+        });
+
+      } else if(step.default_step) {
+        // find the default step
+
+        $.each(paper.project.layers, function(index, layer) {
+          if("step_id" in layer) {
+            if(step.id === layer.step_id) {
+              current_step = layer;
+            } else if(layer.step_id === step.default_step) {
+              default_step = layer;
+            }
+          }
+        });
+
+        drawConnection(current_step, default_step)
+      }
+    });
 
     // link up decisions to next steps
     $.each(data.steps, function(index, step) {
-      $.each(step.decisions, function(index, decision) {
-        if (decision.next_step) {
-          // find the decision display item
-          $.each(paper.project.layers, function(index, layer) {
-            if("decision_id" in layer) {
-              if(layer.decision_id === decision.id) {
-                current_decision = layer;
-                console.log("found match");
-              }
-            }
-          });
 
+      if(step.decision_table.length > 0) {
+        $.each(step.decision_table, function(index, decision_row) {
           // find the next step display item
           $.each(paper.project.layers, function(index, layer) {
             if("step_id" in layer) {
-              if(layer.step_id === decision.next_step) {
+              if(layer.step_id === parseInt(decision_row.next_step, 10)) {
                 current_step = layer;
-                console.log("found match");
               }
             }
           });
 
-          // link up the decision to the next step
-          drawConnection(current_decision, current_step)
-        }
-      });
+          $.each(decision_row.decisions, function(index, decision) {
+            // find the decision display item
+            $.each(paper.project.layers, function(index, layer) {
+              if("decision_id" in layer) {
+                if(layer.decision_id === parseInt(decision, 10)) {
+                  current_decision = layer;
+                  drawConnection(current_decision, current_step)
+                }
+              }
+            });
+
+            // link up the decision to the next step
+
+          });
+        });
+      }
     });
+  }
+
+  var findStep = function(stepId, stepsArray) {
+      for (var i = 0; i < stepsArray.length; i++) {
+          if (stepsArray[i].id === stepId)
+              return stepsArray[i]; // Return as soon as the step is found
+      }
+      return null; // The step was not found
   }
 
   function save_game_layout() {
@@ -721,10 +753,21 @@ $(function() {
     }
 
     if("step_id" in origin && "decision_id" in destination) {
-      console.log(origin.decision_table);
       var decision_key = "{}"
+      console.log(origin.decision_table);
       if(origin.decision_table === "{}") {
-        var decision_key = '\"[' + destination.decision_id + ',0]\"=>\"0\"'
+        decision_key = '\"[' + destination.decision_id + ',0]\"=>\"0\"'
+      } else {
+        decision_key = '\"['
+        $.each(origin.decision_table.decisions, function(index, decision) {
+          decision_key += decision + ","
+        });
+        decision_key += destination.decision_id + ',0]\"=>\"'
+        if (origin.decision_table.next_step) {
+          decision_key += origin.decision_table.next_step + '\"'
+        } else {
+          decision_key += '0\"'
+        }
       }
       json_payload.games.steps.push({id: origin.step_id, decision_table: decision_key})
     }
