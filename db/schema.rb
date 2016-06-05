@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160529112512) do
+ActiveRecord::Schema.define(version: 20160605193806) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -59,8 +59,6 @@ ActiveRecord::Schema.define(version: 20160529112512) do
     t.integer  "mp"
     t.integer  "pp"
     t.integer  "days"
-    t.integer  "next_step"
-    t.integer  "step_id"
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
     t.float    "x_position", default: 0.0
@@ -78,6 +76,14 @@ ActiveRecord::Schema.define(version: 20160529112512) do
     t.float    "pan_x_position", default: 0.0
     t.float    "pan_y_position", default: 0.0
     t.float    "zoom",           default: 0.0
+  end
+
+  create_table "outcomes", force: :cascade do |t|
+    t.integer  "step_id"
+    t.integer  "decision_ids",    default: [],              array: true
+    t.integer  "outcome_step_id"
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
   end
 
   create_table "players", force: :cascade do |t|
