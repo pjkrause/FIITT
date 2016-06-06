@@ -51,6 +51,8 @@ gem 'activeadmin', github: 'activeadmin'
 # gem 'capistrano-rails', group: :development
 gem 'active_model_serializers', '~> 0.10.0'
 
+gem 'chosen-rails', '= 1.4.2'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
