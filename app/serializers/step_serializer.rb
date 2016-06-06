@@ -4,12 +4,9 @@ class StepSerializer < ActiveModel::Serializer
 
   def decision_table
     step_decision_table = []
-    object.decision_table.each do |k,v|
+    object.outcomes.each do |outcome|
       # remove square bracket characters
-      k = k[1..-2]
-      decision_ids = k.split(",")
-      decision_ids -= ["0"]
-      step_decision_table << { decisions: decision_ids, next_step: v }
+      step_decision_table << { id: outcome.id, step: outcome.step.id, decision_ids: outcome.decision_ids, outcome: outcome.outcome_step.id }
     end
 
     return step_decision_table
@@ -17,17 +14,10 @@ class StepSerializer < ActiveModel::Serializer
 
   def decisions
     step_decisions = []
-    object.decision_table.each do |k,v|
-      # remove square bracket characters
-      k = k[1..-2]
-      decision_ids = k.split(",")
-      decision_ids -= ["0"]
-      Decision.where(id: decision_ids).each do |matched_decision|
-        step_decisions << matched_decision
+    object.outcomes.each do |outcome|
+      Decision.where(id: outcome.decision_ids).each do |matched_decision|
+        step_decisions << matched_decision unless step_decisions.include?(matched_decision)
       end
-      puts "***"
-      puts object.id
-      puts step_decisions
     end
     return step_decisions
   end

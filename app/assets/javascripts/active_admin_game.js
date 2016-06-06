@@ -321,6 +321,48 @@ $(function() {
                   $("input#id").val(currently_selected_item.step_id);
                   $("p#step_id").text(currently_selected_item.step_id);
                   $("textarea#status_message").val(currently_selected_item.status_message);
+
+                  // remove any existing children
+                  $("#decisions_and_outcomes_table").children().remove();
+
+                  $.each(currently_selected_item.decision_table, function(index, decision_row) {
+                    var table_row = "";
+                    table_row = '<td class="outcome_step_id" id="outcome_step_id_' + decision_row.id + '"><p>' + decision_row.step + '</p>';
+                    table_row += '<input hidden class="hidden_outcome_id" id="hidden_outcome_id_' + decision_row.id + '" value="' + decision_row.id + '"/></td>';
+
+                    var decision_option_values, outcome_step_option_values;
+                    decision_option_values = "";
+                    outcome_step_option_values = "";
+
+                    $.each(paper.project.layers, function(index, layer) {
+                      if("decision_id" in layer) {
+                        if(decision_row.decision_ids.includes(layer.decision_id)) {
+                          decision_option_values += "<option value=" + layer.decision_id + " selected>" + layer.decision_id + "</option>"
+                        } else {
+                          decision_option_values += "<option value=" + layer.decision_id + ">" + layer.decision_id + "</option>"
+                        }
+                      } else if("step_id" in layer) {
+                        if(decision_row.outcome === layer.step_id) {
+                          outcome_step_option_values += "<option value=" + layer.step_id + " selected>" + layer.step_id + "</option>"
+                        } else {
+                          outcome_step_option_values += "<option value=" + layer.step_id + ">" + layer.step_id + "</option>"
+                        }
+                      }
+                    });
+
+                    table_row += '<td class="outcome_decision_ids" id="outcome_decision_ids_' + decision_row.id + '"><select class="chosen" multiple style="width: 100%;">' + decision_option_values + '</select></td>';
+                    table_row += '<td class="outcome_next_step_id" id="outcome_next_step_id_' + decision_row.id + '"><select class="chosen" style="width: 100%;">' + outcome_step_option_values + '</select></td>';
+                    table_row += '<td><button class="update_outcome" id="update_outcome_' + decision_row.id + '">Update Outcome</button><button id="remove_outcome_' + decision_row.id + '">Remove Outcome</button></td>';
+
+                    $("#decisions_and_outcomes_table").append('<tr>' + table_row + '</tr>');
+                    $("#update_outcome_" + decision_row.id).on("click", function(event) {
+                      update_outcome_handler(event);
+                    });
+                  });
+
+                  $(".chosen").chosen({ allow_single_deselect: true });
+
+
                 } else {
                   $("#game_form").hide();
                   $("#step_form").hide();
@@ -578,9 +620,116 @@ $(function() {
     }
   });
 
+  $("#add_outcome").on("click", function(event) {
+    event.preventDefault();
+
+    var next_id = $("#decisions_and_outcomes_table")[0].childElementCount;
+
+    var table_row = "";
+    table_row = '<td class="outcome_step_id" id="outcome_step_id_' + next_id + '">' + currently_selected_item.step_id + '</td>';
+
+    var decision_option_values, outcome_step_option_values;
+    decision_option_values = "";
+    outcome_step_option_values = "";
+
+    $.each(paper.project.layers, function(index, layer) {
+      if("decision_id" in layer) {
+        decision_option_values += "<option value=" + layer.decision_id + ">" + layer.decision_id + "</option>"
+      } else if("step_id" in layer) {
+        outcome_step_option_values += "<option value=" + layer.step_id + ">" + layer.step_id + "</option>"
+      }
+    });
+
+    table_row += ('<td class="outcome_decision_ids" id="outcome_decision_ids_' + next_id + '"><select class="chosen" multiple style="width: 100%;">' + decision_option_values + '</select></td>')
+
+    table_row += ('<td class="outcome_next_step_id" id="outcome_next_step_id_' + next_id + '"><select class="chosen" style="width: 100%;">' + outcome_step_option_values + '</select></td>');
+    table_row += ('<td><button class="update_outcome" id="update_outcome_' + next_id + '">Update Outcome</button><button id="remove_outcome_' + next_id + '">Remove Outcome</button></td>');
+    $("#decisions_and_outcomes_table").append("<tr>" + table_row + "</tr>")
+    $(".chosen").chosen({ allow_single_deselect: true });
+    $("#update_outcome_" + next_id).on("click", function(event) {
+      update_outcome_handler(event);
+    });
+  });
+
+  function update_outcome_handler(event) {
+    event.preventDefault();
+    console.log("update outcome clicked");
+
+    var json_payload = {
+      games: {
+        id: null,
+        first_step: null,
+        steps: [],
+        decisions: [],
+        outcomes: []
+      }
+    };
+    var decision_ids = []
+
+    $(event.currentTarget).parents("tr").find(".outcome_decision_ids").find("option:selected").each(function(index, decision) {
+      decision_ids.push($(decision).val())
+    });
+
+    json_payload.games.outcomes.push({id: $(event.currentTarget).parents("tr").find("input:hidden").val(), step: currently_selected_item.step_id, decision_ids: decision_ids, outcome: $(event.currentTarget).parents("tr").find(".outcome_next_step_id").find("option:selected").val()});
+
+    var current_path = $(location).attr('pathname');
+
+    if(current_path.length > 3 && current_path.split( '/' )[4] === "edit") {
+      var current_game_id = current_path.split( '/' )[3];
+      var jsonURL = "/games/" + current_game_id + "/game_connections";
+
+      json_payload.games.id = current_game_id;
+
+      $.ajax({
+        url: jsonURL,
+        method: "POST",
+        data: json_payload,
+      }).done(function() {
+
+        $.each(paper.project.layers, function(index, layer) {
+          if("step_id" in layer) {
+            if(layer.step_id === json_payload.games.outcomes[0].step) {
+              current_step = layer;
+            }
+            if(layer.step_id === json_payload.games.outcomes[0].outcome) {
+              outcome_step = layer;
+            }
+          }
+        });
+
+        $.each(json_payload.games.outcomes[0].decision_ids, function(index, decision) {
+          // find the decision display item
+          $.each(paper.project.layers, function(index, layer) {
+            if("decision_id" in layer) {
+              if(layer.decision_id === decision) {
+                current_decision = layer;
+                drawConnection(current_step, current_decision)
+                drawConnection(current_decision, outcome_step)
+              }
+            }
+          });
+        });
+
+        $("<div id='flashes'>" +
+          "<div class='flash flash_notice'>Connection updated</div>" +
+        "</div>").insertAfter("#title_bar");
+        setTimeout( function(){$("#flashes").slideUp();} , 4000);
+      }).error(function(error) {
+        alert("error: " + error);
+        console.log(error);
+      });
+    }
+
+  };
 
   function draw_game_layout(data) {
-    var current_game, current_step, first_step, decisions, current_decision,　default_step;
+    var current_game,
+      current_step,
+      first_step,
+      decisions,
+      current_decision,
+      outcome_step,　
+      default_step;
 
     current_game = drawGame(data.game);
 
@@ -593,43 +742,15 @@ $(function() {
       }
     });
 
+    decisions = []
+    $.each(data.decisions, function(index, decision) {
+      decisions.push(drawDecision(decision))
+    });
+
     // loop through again and add connections between steps
     $.each(data.steps, function(index, step) {
-      decisions = []
 
-      $.each(step.decisions, function(index, decision) {
-        decisions.push(drawDecision(decision))
-      });
-
-      // link steps and decisions
-      if(step.decision_table.length > 0) {
-        $.each(step.decision_table, function(index, decision_row) {
-
-          $.each(paper.project.layers, function(index, layer) {
-            if("step_id" in layer) {
-              if(step.id === layer.step_id) {
-                current_step = layer;
-              }
-            }
-          });
-
-          // find the decision display item
-          $.each(decision_row.decisions, function(index, decision) {
-
-            $.each(paper.project.layers, function(index, layer) {
-              if("decision_id" in layer) {
-                if(layer.decision_id === parseInt(decision, 10)) {
-                  current_decision = layer;
-                  drawConnection(current_step, current_decision);
-                }
-              }
-            });
-
-
-          });
-        });
-
-      } else if(step.default_step) {
+      if(step.default_step) {
         // find the default step
 
         $.each(paper.project.layers, function(index, layer) {
@@ -646,27 +767,31 @@ $(function() {
       }
     });
 
-    // link up decisions to next steps
+    // link up steps up to decisions to outcomes
     $.each(data.steps, function(index, step) {
 
       if(step.decision_table.length > 0) {
         $.each(step.decision_table, function(index, decision_row) {
-          // find the next step display item
+          // find the step and outcome display itema
           $.each(paper.project.layers, function(index, layer) {
             if("step_id" in layer) {
-              if(layer.step_id === parseInt(decision_row.next_step, 10)) {
+              if(layer.step_id === decision_row.step) {
                 current_step = layer;
+              }
+              if(layer.step_id === decision_row.outcome) {
+                outcome_step = layer;
               }
             }
           });
 
-          $.each(decision_row.decisions, function(index, decision) {
+          $.each(decision_row.decision_ids, function(index, decision) {
             // find the decision display item
             $.each(paper.project.layers, function(index, layer) {
               if("decision_id" in layer) {
-                if(layer.decision_id === parseInt(decision, 10)) {
+                if(layer.decision_id === decision) {
                   current_decision = layer;
-                  drawConnection(current_decision, current_step)
+                  drawConnection(current_step, current_decision)
+                  drawConnection(current_decision, outcome_step)
                 }
               }
             });
@@ -754,13 +879,19 @@ $(function() {
 
     if("step_id" in origin && "decision_id" in destination) {
       var decision_key = "{}"
-      console.log(origin.decision_table);
+
       if(origin.decision_table === "{}") {
         decision_key = '\"[' + destination.decision_id + ',0]\"=>\"0\"'
       } else {
-        decision_key = '\"['
-        $.each(origin.decision_table.decisions, function(index, decision) {
-          decision_key += decision + ","
+        decision_key = '{'
+        $.each(origin.decision_table, function(index, decision_row) {
+          decision_key += '\"['
+          $.each(decision_row.decision, function(index, decision) {
+            decision_key += decision
+            if (index < decision_row.decision.length()) {
+              decision_key += ","
+            }
+          });
         });
         decision_key += destination.decision_id + ',0]\"=>\"'
         if (origin.decision_table.next_step) {
