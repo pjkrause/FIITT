@@ -199,7 +199,7 @@ class GamesController < ApplicationController
       end
 
       if games_params[:item_type] == "decision"
-        new_decision = Decision.new
+        new_decision = @game.decisions.build({})
         unless new_decision.save
           errors << "Error creating new decision: #{new_decision.errors.full_messages}"
         end
@@ -262,6 +262,21 @@ class GamesController < ApplicationController
       end
     end
 
+    if games_params[:outcomes]
+      games_params[:outcomes].each do |outcome|
+        outcome = outcome[1]
+        existing_outcome = Outcome.exists?(outcome[:id])
+        outcome[:id] = "" unless existing_outcome
+
+        outcome_to_update = Outcome.find_or_create_by({id: outcome[:id]})
+        outcome_to_update.update({step_id: outcome[:step], decision_ids: outcome[:decision_ids], outcome_step_id: outcome[:outcome]})
+
+        unless outcome_to_update.save
+          errors << "outcome : #{outcome_to_update.errors.full_messages}"
+        end
+      end
+    end
+
     if errors.count == 0
       render json: :success
     else
@@ -275,7 +290,8 @@ class GamesController < ApplicationController
     params.require(:games).permit(
       :id, :x, :y, :pan_x, :pan_y, :zoom, :item_type, :first_step,
       steps: [:id, :x_position, :y_position, :decision_table],
-      decisions: [:id, :x_position, :y_position, :next_step]
+      decisions: [:id, :x_position, :y_position, :next_step],
+      outcomes: [:id, :step, :outcome, decision_ids: []]
     )
   end
 

@@ -1,6 +1,6 @@
 class GameSerializer < ActiveModel::Serializer
 
-  attributes :game, :steps
+  attributes :game, :steps, :decisions
 
   def game
     object
@@ -14,5 +14,9 @@ class GameSerializer < ActiveModel::Serializer
     end
 
     step_array
+  end
+
+  def decisions
+    object.decisions
   end
 end

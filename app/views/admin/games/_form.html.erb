@@ -40,10 +40,36 @@
       </li>
       <li class="input required stringish">
         <%= f.label :status_message %>
-        <%= f.text_area :status_message,:id=>"status_message", :cols=>"45", :rows=>"10" %>
+        <%= f.text_area :status_message, :id=>"status_message", :cols=>"45", :rows=>"10" %>
       </li>
     </ol>
     <%= submit_tag("Update Step") %>
+  </fieldset>
+  <fieldset class="inputs">
+    <legend>
+      <span>Decisions and outcomes</span>
+    </legend>
+    <div class="panel_contents" style="padding: 3px 8px 8px 8px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Step Id</th>
+            <th>Decisions</th>
+            <th>Outcome Step Id</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="decisions_and_outcomes_table">
+          <tr>
+            <td class="outcome_step_id" id="outcome_step_id_1"></td>
+            <td class="outcome_decision_ids" id="outcome_decision_ids_1"><input /></td>
+            <td class="outcome_next_step_id" id="outcome_next_step_id_1"><input /></td>
+            <td><button id="remove_outcome">Remove Outcome</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <button id="add_outcome">Add Outcome</button>
+    </div>
   </fieldset>
 <% end %>
 <%= semantic_form_for(:decision, html: { id: "decision_form", style: "display: none"}) do |f| %>
