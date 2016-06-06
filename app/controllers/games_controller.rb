@@ -262,10 +262,14 @@ class GamesController < ApplicationController
       end
     end
 
+    outcome_to_update = nil
+
     if games_params[:outcomes]
       games_params[:outcomes].each do |outcome|
         outcome = outcome[1]
-        existing_outcome = Outcome.exists?(outcome[:id])
+        if outcome[:id].to_i < 2147483647
+          existing_outcome = Outcome.exists?(outcome[:id])
+        end
         outcome[:id] = "" unless existing_outcome
 
         outcome_to_update = Outcome.find_or_create_by({id: outcome[:id]})
@@ -273,6 +277,32 @@ class GamesController < ApplicationController
 
         unless outcome_to_update.save
           errors << "outcome : #{outcome_to_update.errors.full_messages}"
+        end
+      end
+    end
+
+    if errors.count == 0
+      render json: { outcomes: outcome_to_update }
+    else
+      render json: { errors: errors }, status: :unprocessable_entity
+    end
+  end
+
+  def delete_connection
+    errors = []
+
+    @game = Game.find(params[:id])
+
+    if games_params[:outcomes]
+      games_params[:outcomes].each do |outcome|
+        outcome = outcome[1]
+        existing_outcome = Outcome.exists?(outcome[:id])
+        outcome[:id] = "" unless existing_outcome
+
+        outcome_to_delete = Outcome.find(outcome[:id])
+
+        unless outcome_to_delete.destroy
+          errors << "outcome : #{outcome_to_delete.errors.full_messages}"
         end
       end
     end

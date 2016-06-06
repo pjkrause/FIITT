@@ -14,6 +14,7 @@ Rails.application.routes.draw do
     delete 'delete_layout_item', on: :member, to: 'games#delete_layout_item'
     post 'add_layout_item', on: :member, to: 'games#add_layout_item'
     post 'game_connections', on: :member, to: 'games#add_connection'
+    delete 'game_connections', on: :member, to: 'games#delete_connection'
   end
 
   post 'admin/games/:id/edit' => 'games#update'
