@@ -6,7 +6,6 @@ ActiveAdmin.register Step do
   permit_params :general_message, :decision_table, :status_message, :default_step, :guidance, :game_id
   sidebar "Step Details", only: [:show, :edit] do
     ul do
-      li link_to("Decision Choices", admin_step_decisions_path(step))
       li link_to("Stakeholder Messages", admin_step_stakeholder_messages_path(step))
     end
   end
