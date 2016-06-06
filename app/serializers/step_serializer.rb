@@ -6,7 +6,7 @@ class StepSerializer < ActiveModel::Serializer
     step_decision_table = []
     object.outcomes.each do |outcome|
       # remove square bracket characters
-      step_decision_table << { id: outcome.id, step: outcome.step.id, decision_ids: outcome.decision_ids, outcome: outcome.outcome_step.id }
+      step_decision_table << { id: outcome.id, step: outcome.step.id, decision_ids: outcome.decision_ids, outcome: outcome.outcome_step.id, colour: outcome.colour }
     end
 
     return step_decision_table
