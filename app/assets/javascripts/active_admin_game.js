@@ -148,7 +148,7 @@ var drawDecision = function(decision) {
 }
 
 
-var drawConnection = function(origin, destination) {
+var drawConnection = function(origin, destination, colour) {
 
   var origin_point = new Point(origin.firstChild.position);
   var destination_point = new Point(destination.firstChild.position);
@@ -170,20 +170,24 @@ var drawConnection = function(origin, destination) {
   var new_connection = new Path.Line(origin_point, destination_point);
   //var arrow = new Path.RegularPolygon(mid_point, 3, 10);
 
-  new_connection.strokeColor = 'black';
   new_connection.strokeWidth = 3;
 
   var arrow = new Point(destination_point.x - origin_point.x, destination_point.y - origin_point.y);
   arrow = arrow.normalize(20);
   var arrow_path = new Group(new Path([arrow.rotate(135), new Point(0,0), arrow.rotate(-135)]));
-
-  arrow_path.strokeColor = 'black';
+  if(colour) {
+    new_connection.strokeColor = colour;
+    arrow_path.strokeColor = colour;
+  } else {
+    new_connection.strokeColor = 'black';
+    arrow_path.strokeColor = 'black';
+  }
   arrow_path.strokeWidth = 3;
   arrow_path.translate(mid_point);
 
   origin.addChild(connection_layer);
-  origin.connections.push({to: destination, layer: connection_layer})
-  destination.connections.push({from: origin, layer: connection_layer})
+  origin.connections.push({to: destination, layer: connection_layer, colour: new_connection.strokeColor})
+  destination.connections.push({from: origin, layer: connection_layer, colour: new_connection.strokeColor})
 }
 
 var redraw_connections = function(origin) {
@@ -218,7 +222,7 @@ var redraw_connections = function(origin) {
     // redraw the original line
     var new_connection = new Path.Line(origin_point, destination_point);
 
-    new_connection.strokeColor = 'black';
+    new_connection.strokeColor = connection.colour;
     new_connection.strokeWidth = 3;
     connection.layer.addChild(new_connection);
 
@@ -230,7 +234,7 @@ var redraw_connections = function(origin) {
     arrow = arrow.normalize(20);
 
     var arrow_path = new Group(new Path([arrow.rotate(135), new Point(0,0), arrow.rotate(-135)]));
-    arrow_path.strokeColor = 'black';
+    arrow_path.strokeColor = connection.colour;
     arrow_path.strokeWidth = 3;
     arrow_path.translate(mid_point);
 
@@ -330,9 +334,10 @@ $(function() {
                     table_row = '<td class="outcome_step_id" id="outcome_step_id_' + decision_row.id + '"><p>' + decision_row.step + '</p>';
                     table_row += '<input hidden class="hidden_outcome_id" id="hidden_outcome_id_' + decision_row.id + '" value="' + decision_row.id + '"/></td>';
 
-                    var decision_option_values, outcome_step_option_values;
+                    var decision_option_values, outcome_step_option_values, colour_option_values;
                     decision_option_values = "";
                     outcome_step_option_values = "";
+                    color_option_values = "";
 
                     $.each(paper.project.layers, function(index, layer) {
                       if("decision_id" in layer) {
@@ -350,8 +355,17 @@ $(function() {
                       }
                     });
 
+                    $.each(["#000000", "#FF0000", "#00FF00", "#0000FF"], function(index, colour) {
+                      if(colour === decision_row.colour) {
+                        color_option_values += "<option value=" + colour + " selected>" + colour + "</option>"
+                      } else {
+                        color_option_values += "<option value=" + colour + ">" + colour + "</option>"
+                      }
+                    });
+
                     table_row += '<td class="outcome_decision_ids" id="outcome_decision_ids_' + decision_row.id + '"><select class="chosen" multiple style="width: 100%;">' + decision_option_values + '</select></td>';
                     table_row += '<td class="outcome_next_step_id" id="outcome_next_step_id_' + decision_row.id + '"><select class="chosen" style="width: 100%;">' + outcome_step_option_values + '</select></td>';
+                    table_row += '<td class="outcome_colour" id="outcome_colour_' + decision_row.id + '"><select class="chosen" style="width: 100%;">' + color_option_values + '</select></td>';
                     table_row += '<td><button class="update_outcome" id="update_outcome_' + decision_row.id + '">Update Outcome</button><button id="delete_outcome_' + decision_row.id + '">Delete Outcome</button></td>';
 
                     $("#decisions_and_outcomes_table").append('<tr>' + table_row + '</tr>');
@@ -632,9 +646,10 @@ $(function() {
     table_row = '<td class="outcome_step_id" id="outcome_step_id_' + next_id + '"><p>' + currently_selected_item.step_id + '</p>';
     table_row += '<input hidden class="hidden_outcome_id" id="hidden_outcome_id_' + next_id + '" value="' + next_id + '"/></td>';
 
-    var decision_option_values, outcome_step_option_values;
+    var decision_option_values, outcome_step_option_values, color_option_values;
     decision_option_values = "";
     outcome_step_option_values = "";
+    color_option_values = "";
 
     $.each(paper.project.layers, function(index, layer) {
       if("decision_id" in layer) {
@@ -644,9 +659,13 @@ $(function() {
       }
     });
 
-    table_row += ('<td class="outcome_decision_ids" id="outcome_decision_ids_' + next_id + '"><select class="chosen" multiple style="width: 100%;">' + decision_option_values + '</select></td>')
+    $.each(["#000000", "#FF0000", "#00FF00", "#0000FF"], function(index, colour) {
+      color_option_values += "<option value=" + colour + ">" + colour + "</option>"
+    });
 
+    table_row += ('<td class="outcome_decision_ids" id="outcome_decision_ids_' + next_id + '"><select class="chosen" multiple style="width: 100%;">' + decision_option_values + '</select></td>')
     table_row += ('<td class="outcome_next_step_id" id="outcome_next_step_id_' + next_id + '"><select class="chosen" style="width: 100%;">' + outcome_step_option_values + '</select></td>');
+    table_row += '<td class="outcome_colour" id="outcome_colour_' + next_id + '"><select class="chosen" style="width: 100%;">' + color_option_values + '</select></td>';
     table_row += ('<td><button class="update_outcome" id="update_outcome_' + next_id + '">Update Outcome</button><button id="delete_outcome_' + next_id + '">Remove Outcome</button></td>');
     $("#decisions_and_outcomes_table").append("<tr>" + table_row + "</tr>")
     $(".chosen").chosen({ allow_single_deselect: true });
@@ -729,7 +748,7 @@ $(function() {
 
                 if(connection_already_found === false) {
                   console.log("not found, so drawConnection(current_step, current_decision)");
-                  drawConnection(current_step, current_decision)
+                  drawConnection(current_step, current_decision, "#000000")
                 }
 
                 connection_already_found = false;
@@ -741,7 +760,7 @@ $(function() {
 
                 if(connection_already_found === false) {
                   console.log("not found, so drawConnection(current_decision, outcome_step)");
-                  drawConnection(current_decision, outcome_step)
+                  drawConnection(current_decision, outcome_step, "#000000")
                 }
                 paper.view.update();
               }
@@ -860,7 +879,7 @@ $(function() {
       current_step = drawStep(step);
 
       if(step.id === data.game.first_step) {
-        drawConnection(current_game, current_step);
+        drawConnection(current_game, current_step, "#000000");
       }
     });
 
@@ -885,7 +904,7 @@ $(function() {
           }
         });
 
-        drawConnection(current_step, default_step)
+        drawConnection(current_step, default_step, "#000000")
       }
     });
 
@@ -912,15 +931,13 @@ $(function() {
               if("decision_id" in layer) {
                 if(layer.decision_id === decision) {
                   current_decision = layer;
-                  drawConnection(current_step, current_decision)
-                  drawConnection(current_decision, outcome_step)
+                  drawConnection(current_step, current_decision, "#000000")
+                  drawConnection(current_decision, outcome_step, decision_row.colour)
                 }
               }
             });
-
-            // link up the decision to the next step
-
           });
+
         });
       }
     });
@@ -1042,7 +1059,7 @@ $(function() {
         method: "POST",
         data: json_payload,
       }).done(function() {
-        drawConnection(origin, destination)
+        drawConnection(origin, destination, "#000000")
         $("<div id='flashes'>" +
           "<div class='flash flash_notice'>Connection updated</div>" +
         "</div>").insertAfter("#title_bar");
