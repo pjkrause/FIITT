@@ -696,7 +696,13 @@ $(function() {
       decision_ids.push($(decision).val())
     });
 
-    json_payload.games.outcomes.push({id: $(event.currentTarget).parents("tr").find("input:hidden").val(), step: currently_selected_item.step_id, decision_ids: decision_ids, outcome: $(event.currentTarget).parents("tr").find(".outcome_next_step_id").find("option:selected").val()});
+    json_payload.games.outcomes.push({
+      id: $(event.currentTarget).parents("tr").find("input:hidden").val(),
+      step: currently_selected_item.step_id,
+      decision_ids: decision_ids,
+      outcome: $(event.currentTarget).parents("tr").find(".outcome_next_step_id").find("option:selected").val(),
+      colour: $(event.currentTarget).parents("tr").find(".outcome_colour").find("option:selected").val()
+    });
 
     var current_path = $(location).attr('pathname');
 
@@ -747,7 +753,6 @@ $(function() {
                 });
 
                 if(connection_already_found === false) {
-                  console.log("not found, so drawConnection(current_step, current_decision)");
                   drawConnection(current_step, current_decision, "#000000")
                 }
 
@@ -755,6 +760,9 @@ $(function() {
                 $.each(current_decision.connections, function(index, connection) {
                   if(connection.to === outcome_step) {
                     connection_already_found = true;
+                    // make sure colour is up to date and redraw
+                    connection.colour = json_payload.games.outcomes[0].colour;
+                    redraw_connections(current_decision)
                   }
                 });
 
