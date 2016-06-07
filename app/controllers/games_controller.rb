@@ -273,7 +273,12 @@ class GamesController < ApplicationController
         outcome[:id] = "" unless existing_outcome
 
         outcome_to_update = Outcome.find_or_create_by({id: outcome[:id]})
-        outcome_to_update.update({step_id: outcome[:step], decision_ids: outcome[:decision_ids], outcome_step_id: outcome[:outcome]})
+        outcome_to_update.update({
+          step_id: outcome[:step],
+          decision_ids: outcome[:decision_ids],
+          outcome_step_id: outcome[:outcome],
+          colour: outcome[:colour]
+        })
 
         unless outcome_to_update.save
           errors << "outcome : #{outcome_to_update.errors.full_messages}"
@@ -321,7 +326,7 @@ class GamesController < ApplicationController
       :id, :x, :y, :pan_x, :pan_y, :zoom, :item_type, :first_step,
       steps: [:id, :x_position, :y_position, :decision_table],
       decisions: [:id, :x_position, :y_position, :next_step],
-      outcomes: [:id, :step, :outcome, decision_ids: []]
+      outcomes: [:id, :step, :outcome, :colour, decision_ids: []]
     )
   end
 
