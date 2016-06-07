@@ -1024,34 +1024,8 @@ $(function() {
       json_payload.games.first_step = origin.first_step;
     }
 
-    if("step_id" in origin && "decision_id" in destination) {
-      var decision_key = "{}"
-
-      if(origin.decision_table === "{}") {
-        decision_key = '\"[' + destination.decision_id + ',0]\"=>\"0\"'
-      } else {
-        decision_key = '{'
-        $.each(origin.decision_table, function(index, decision_row) {
-          decision_key += '\"['
-          $.each(decision_row.decision, function(index, decision) {
-            decision_key += decision
-            if (index < decision_row.decision.length()) {
-              decision_key += ","
-            }
-          });
-        });
-        decision_key += destination.decision_id + ',0]\"=>\"'
-        if (origin.decision_table.next_step) {
-          decision_key += origin.decision_table.next_step + '\"'
-        } else {
-          decision_key += '0\"'
-        }
-      }
-      json_payload.games.steps.push({id: origin.step_id, decision_table: decision_key})
-    }
-
-    if("decision_id" in origin && "step_id" in destination) {
-      json_payload.games.decisions.push({id: origin.decision_id, next_step: destination.step_id})
+    if("step_id" in origin && "step_id" in destination) {
+      json_payload.games.steps.push({id: origin.step_id, default_step: destination.step_id})
     }
 
     var current_path = $(location).attr('pathname');

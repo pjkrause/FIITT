@@ -237,27 +237,12 @@ class GamesController < ApplicationController
         step = step[1]
         step_to_update = Step.find(step[:id].to_i)
         if step_to_update
-          step_to_update.decision_table = step[:decision_table]
+          step_to_update.default_step = step[:default_step]
           unless step_to_update.save
             errors << "step_id #{step[:id]}: #{step_to_update.errors.full_messages}"
           end
         else
           errors << "step_id #{step[:id]}: not found"
-        end
-      end
-    end
-
-    if games_params[:decisions]
-      games_params[:decisions].each do |decision|
-        decision = decision[1]
-        decision_to_update = Decision.find(decision[:id].to_i)
-        if decision_to_update
-          decision_to_update.next_step = decision[:next_step]
-          unless decision_to_update.save
-            errors << "decision_id #{decision[:id]}: #{decision_to_update.errors.full_messages}"
-          end
-        else
-          errors << "decision_id #{decision[:id]}: not found"
         end
       end
     end
@@ -324,7 +309,7 @@ class GamesController < ApplicationController
   def games_params
     params.require(:games).permit(
       :id, :x, :y, :pan_x, :pan_y, :zoom, :item_type, :first_step,
-      steps: [:id, :x_position, :y_position, :decision_table],
+      steps: [:id, :x_position, :y_position, :default_step],
       decisions: [:id, :x_position, :y_position, :next_step],
       outcomes: [:id, :step, :outcome, :colour, decision_ids: []]
     )
