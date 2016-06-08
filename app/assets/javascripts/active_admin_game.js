@@ -50,7 +50,7 @@ var drawGame = function(game) {
   var rectangle = new Rectangle(new Point(0, 0), new Point(150, 100));
   var rectangle_path = new Path.Rectangle(rectangle);
 
-  var game_title = game.title ? formatText(game.title) : ""
+  var game_title = game.title ? game.id + "\n" + formatText(game.title) : game.id
 
   var game_text = new PointText({
     point: [0, 80],
@@ -83,7 +83,7 @@ var drawStep = function(step) {
   var rectangle = new Rectangle(new Point(0, 0), new Point(150, 100));
   var rectangle_path = new Path.Rectangle(rectangle);
 
-  var status_message = step.status_message ? formatText(step.status_message) : ""
+  var status_message = step.status_message ? step.id + "\n" + formatText(step.status_message) : step.id
 
   var step_text = new PointText({
     point: [0, 80],
@@ -118,7 +118,7 @@ var drawDecision = function(decision) {
   var rectangle = new Rectangle(new Point(0, 0), new Point(150, 100));
   var rectangle_path = new Path.Rectangle(rectangle);
 
-  var decision_choice = decision.choice ? formatText(decision.choice) : ""
+  var decision_choice = decision.choice ? decision.id + "\n" + formatText(decision.choice) : decision.id
 
   var decision_text = new PointText({
     point: [0, 80],
@@ -712,6 +712,12 @@ $(function() {
 
       json_payload.games.id = current_game_id;
 
+      $.each(paper.project.layers, function(index, layer) {
+        if("game_id" in layer) {
+          json_payload.games.first_step = layer.first_step
+        }
+      });
+
       $.ajax({
         url: jsonURL,
         method: "POST",
@@ -1021,7 +1027,11 @@ $(function() {
     if("game_id" in origin && "step_id" in destination) {
       json_payload.games.first_step = destination.step_id;
     } else {
-      json_payload.games.first_step = origin.first_step;
+      $.each(paper.project.layers, function(index, layer) {
+        if("game_id" in layer) {
+          json_payload.games.first_step = layer.first_step
+        }
+      });
     }
 
     if("step_id" in origin && "step_id" in destination) {
