@@ -71,9 +71,9 @@ group :development do
   gem 'spring'
 
   gem 'capistrano', '~> 3.5.0', require: false
-  gem 'capistrano-bundler', '~> 1.1.2', require: false
-  gem 'capistrano-rails', '~> 1.1.1', require: false
-  gem 'capistrano-rvm', require: false
-  gem 'capistrano-figaro-yml', '~> 1.0.2', require: false
+  gem 'capistrano-rvm', '~> 0.1.0', require: false
+  gem 'capistrano-rails', '~> 1.1.0', require: false
+  gem 'capistrano-bundler', '~> 1.1.0', require: false
   gem 'capistrano3-puma', '~> 1.2.0', require: false
+  gem 'capistrano-figaro-yml', '~> 1.0.2', require: false
 end
