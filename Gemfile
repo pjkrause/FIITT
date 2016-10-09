@@ -53,13 +53,27 @@ gem 'active_model_serializers', '~> 0.10.0'
 
 gem 'chosen-rails', '= 1.4.2'
 
+gem 'figaro', '~> 1.1.0'
+
+gem 'puma', '~> 3.6.0'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
 
+end
+
+group :development do
   # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'web-console', '~> 2.0'
 
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
+
+  gem 'capistrano', '~> 3.5.0', require: false
+  gem 'capistrano-bundler', '~> 1.1.2', require: false
+  gem 'capistrano-rails', '~> 1.1.1', require: false
+  gem 'capistrano-rvm', require: false
+  gem 'capistrano-figaro-yml', '~> 1.0.2', require: false
+  gem 'capistrano3-puma', '~> 1.2.0', require: false
 end
