@@ -1,0 +1,21 @@
+s = 
+
+s.each do |step|
+ if  Decision.exists?(step[:id])
+   d = Decision.find(step[:id])
+   d.update(step)
+   else
+     Decision.create(step)
+   end
+ end
+
+
+
+s.each do |step|
+if  Step.exists?(step[:id])
+  d = Step.find(step[:id])
+  d.update(step)
+  else
+    Step.create(step)
+  end
+end
