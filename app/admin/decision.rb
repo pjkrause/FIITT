@@ -1,9 +1,9 @@
 ActiveAdmin.register Decision do
-  
+
 # See permitted parameters documentation:
 # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
 #
-  permit_params :choice, :rt, :ec, :ic, :mp, :pp, :days, :next_step, :step_id
+  permit_params :choice, :rt, :ec, :ic, :mp, :pp, :days, :step_id
 #
 # or
 #
