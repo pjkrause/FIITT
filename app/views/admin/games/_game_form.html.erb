@@ -1,0 +1,95 @@
+<canvas id="network_canvas" resize style="background: grey;"></canvas>
+<button id="save_game_layout">Save Game Layout</button>
+<button id="add_new_step">Add New Step</button>
+<button id="add_new_decision">Add New Decision</button>
+<button id="remove_item">Remove Item</button>
+<br /><br />
+<%= semantic_form_for(:game, html: { id: "game_form", style: "display: none"}) do |f| %>
+  <fieldset class="inputs">
+    <legend>
+      <span>Game details</span>
+    </legend>
+    <ol>
+      <li>
+        <%= f.label "game id" %>
+        <p id="game_id"></p>
+        <%= f.hidden_field :id, :id => "id" %>
+      </li>
+      <li id="title" class="input required stringish">
+        <%= f.label :title %>
+        <%= f.text_area :title,:id=>"title", :cols=>"45", :rows=>"5" %>
+      </li>
+      <li id="description" class="input required stringish">
+        <%= f.label :description %>
+        <%= f.text_area :description,:id=>"description", :cols=>"45", :rows=>"15" %>
+      </li>
+    </ol>
+    <%= submit_tag("Update Step") %>
+  </fieldset>
+<% end %>
+<%= semantic_form_for(:step, html: { id: "step_form", style: "display: none"}) do |f| %>
+  <fieldset class="inputs">
+    <legend>
+      <span>Step details</span>
+    </legend>
+    <ol>
+      <li>
+        <%= f.label "step id" %>
+        <p id="step_id"></p>
+        <%= f.hidden_field :id, :id => "id" %>
+      </li>
+      <li class="input required stringish">
+        <%= f.label :status_message %>
+        <%= f.text_area :status_message, :id=>"status_message", :cols=>"45", :rows=>"10" %>
+      </li>
+    </ol>
+    <%= submit_tag("Update Step") %>
+  </fieldset>
+  <fieldset class="inputs">
+    <legend>
+      <span>Decisions and outcomes</span>
+    </legend>
+    <div class="panel_contents" style="padding: 3px 8px 8px 8px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Step Id</th>
+            <th>Decisions Ids</th>
+            <th>Outcome Step Id</th>
+            <th>Colour</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="decisions_and_outcomes_table">
+          <tr>
+            <td class="outcome_step_id" id="outcome_step_id_1"></td>
+            <td class="outcome_decision_ids" id="outcome_decision_ids_1" style="width: 100%"><input /></td>
+            <td class="outcome_next_step_id" id="outcome_next_step_id_1" style="width: 100%"><input /></td>
+            <td class="outcome_colour" id="outcome_colour_1"><input /></td>
+            <td><button id="remove_outcome">Remove Outcome</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <button id="add_outcome">Add Outcome</button>
+    </div>
+  </fieldset>
+<% end %>
+<%= semantic_form_for(:decision, html: { id: "decision_form", style: "display: none"}) do |f| %>
+  <fieldset class="inputs">
+    <legend>
+      <span>Decision details</span>
+    </legend>
+    <ol>
+      <li>
+        <%= f.label "decision id" %>
+        <p id="decision_id"></p>
+        <%= f.hidden_field :id, :id => "id" %>
+      </li>
+      <li class="input required stringish">
+        <%= f.label :choice %>
+        <%= f.text_area :choice, :id=>"choice", :cols=>"45", :rows=>"10" %>
+      </li>
+    </ol>
+    <%= submit_tag("Update Decision") %>
+  </fieldset>
+<% end %>
