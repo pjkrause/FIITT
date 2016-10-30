@@ -318,6 +318,7 @@ $(function() {
                   $("input#id").val(currently_selected_item.game_id);
                   $("textarea#title").val(currently_selected_item.title);
                   $("textarea#description").val(currently_selected_item.description);
+                  $("#game_first_step").chosen({ allow_single_deselect: true });
                 } else if("step_id" in currently_selected_item) {
                   $("#game_form").hide();
                   $("#step_form").show();

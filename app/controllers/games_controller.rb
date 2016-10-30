@@ -17,6 +17,7 @@ class GamesController < ApplicationController
       if @game
         @game.title = game_update_params[:title]
         @game.description = game_update_params[:description]
+        @game.first_step = game_update_params[:first_step]
         if @game.save
           updated_model = "Game"
         else
@@ -319,7 +320,8 @@ class GamesController < ApplicationController
     params.require(:game).permit(
       :id,
       :title,
-      :description
+      :description,
+      :first_step
     )
   end
 

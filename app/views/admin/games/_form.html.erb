@@ -1,5 +1,6 @@
 <% if resource.new_record? %>
   <%= render partial: "new_game_form" %>
 <% else %>
+  <% @game = resource %>
   <%= render partial: "game_form" %>
 <% end %>
