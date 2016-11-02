@@ -31,14 +31,13 @@
         <% if @decision_choices %>
             <h2 class="action_text">Decision Choices</h2>
             <% if @decision_choices != [] %>
-                <% @choices = Choices.new %>
                 <% if @decision_choices.length == 1 %>
                     Click box to confirm you have read the page and then "Go"
                 <% else %>
                     Check one or more boxes and then "Go"
                 <% end %>
                 <%= form_tag( next_step_path, method: :get ) do %>
-                    <%= collection_check_boxes(:choices, :choice_ids, @decision_choices, :id, :choice) do |b| %>
+                    <%= collection_check_boxes(:decisions, :decision_ids, @decision_choices, :id, :choice) do |b| %>
                         <%= b.label { b.check_box + b.text } %>
                         <br/>
                     <% end %>

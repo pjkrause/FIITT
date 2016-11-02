@@ -8,7 +8,7 @@ class StepsController < ApplicationController
   # GET /steps
   # GET /steps.json
   def index
-    
+
   end
 
   def about
@@ -39,14 +39,16 @@ class StepsController < ApplicationController
   # than this if we want to offer the option to restart an incomplete session
   def start
     @step = Step.find(params[:id])
-    @decision_choices = @step.decisions
+    @choices = Outcome.where(step_id: @step.id)
+    @decision_choices = Decision.where(id: @choices.each.map { |choice| choice.decision_ids }.flatten.uniq )
     @messages = @step.stakeholder_messages
     @status = Status.create(player_id: current_player.id, game_id: @step.game_id, trace: {"0"=>[[], @step.id]})
     set_status(@status.id)
   end
 
   def show
-    @decision_choices = @step.decisions
+    @choices = Outcome.where(step_id: @step.id)
+    @decision_choices = Decision.where(id: @choices.each.map { |choice| choice.decision_ids }.flatten.uniq )
     @status.day_no += 1 # @status.day_no + @decision.days
     @status.trace["#{@status.day_no}"] = [@key, @step.id] # I think this should be current_step
     @status.save
@@ -161,19 +163,17 @@ class StepsController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_step   
+    def set_step
       @step = Step.find(params[:id])
     end
 
-    def set_next_step   
-      @choices = params[:choices]["choice_ids"]
-      @key = @choices.map{|i| i.to_i}
-      current_step = Step.find(params[:current_step])
-      next_step_id = current_step.decision_table[String(@key)].to_i
-      if next_step_id != 0
-        @step = Step.find(next_step_id)
+    def set_next_step
+      decision_ids = params[:decisions]["decision_ids"].map{|i| i.to_i }.reject{|i| i == 0}.join(",")
+      next_steps = Outcome.where(step_id: params[:current_step], decision_ids: "{#{decision_ids}}")
+      if next_steps.count == 1
+        @step = Step.find(next_steps.first.outcome_step_id)
       else
-        @step = Step.find(current_step.default_step)
+        @step = Step.find(current_step)
       end
     end
 
