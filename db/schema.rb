@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160606215708) do
+ActiveRecord::Schema.define(version: 20170110201241) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -77,6 +77,7 @@ ActiveRecord::Schema.define(version: 20160606215708) do
     t.float    "pan_x_position", default: 0.0
     t.float    "pan_y_position", default: 0.0
     t.float    "zoom",           default: 0.0
+    t.string   "game_image"
   end
 
   create_table "outcomes", force: :cascade do |t|

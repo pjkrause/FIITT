@@ -18,6 +18,7 @@ class GamesController < ApplicationController
         @game.title = game_update_params[:title]
         @game.description = game_update_params[:description]
         @game.first_step = game_update_params[:first_step]
+        @game.game_image = game_update_params[:game_image]
         if @game.save
           updated_model = "Game"
         else
@@ -321,7 +322,8 @@ class GamesController < ApplicationController
       :id,
       :title,
       :description,
-      :first_step
+      :first_step,
+      :game_image
     )
   end
 

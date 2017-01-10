@@ -5,26 +5,24 @@
 
     <div class="games-scenarios">
         <!-- TEMPORARY PICTURE VARIABLE -->
-        <%count = 0 %>
-        <% @games.each do |game| %>
-        <%count = count+1 %>
-        <div class="game-tile-border">
-            <section class="game_tile pic<%=count.to_s%>">
+        <% count = 0 %>
 
-                <!--<h1><%= game.title %></h1>
-                <p>
-                <%= game.description %>
-                </p>-->
-                <p>
-                    <% if player_signed_in? %>
-                    <%= button_to "Start the Scenario", 'start/' + game.first_step.to_s, method: :get, class: "game_tile_button" %>
-                    <% else %>
-                    <%= button_to "Start the Scenario", new_player_session_path, class: "game_tile_button" %>
-                    <% end %>
-                </p>
-            </section>
-        </div>
+        <% @games.each do |game| %>
+          <% count = count+1 %>
+          <div class="game-tile-border">
+              <section class="game_tile" style="background-image: url('<%= game.game_image.button.url %>')">
+
+                  <p>
+                      <% if player_signed_in? %>
+                      <%= button_to "Start the Scenario", 'start/' + game.first_step.to_s, method: :get, class: "game_tile_button" %>
+                      <% else %>
+                      <%= button_to "Start the Scenario", new_player_session_path, class: "game_tile_button" %>
+                      <% end %>
+                  </p>
+              </section>
+          </div>
         <% end %>
+
         <% if player_signed_in? %>
             <p>
             You have <%= @statuses.length %> uncompleted game<%= "s" if @statuses.length != 1 %>.</br>
