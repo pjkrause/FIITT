@@ -14,9 +14,9 @@
 
                   <p>
                       <% if player_signed_in? %>
-                      <%= button_to "Start the Scenario", 'start/' + game.first_step.to_s, method: :get, class: "game_tile_button" %>
+                      <%= button_to "Start #{game.title}", 'start/' + game.first_step.to_s, method: :get, class: "game_tile_button" %>
                       <% else %>
-                      <%= button_to "Start the Scenario", new_player_session_path, class: "game_tile_button" %>
+                      <%= button_to "Start #{game.title}", new_player_session_path, class: "game_tile_button" %>
                       <% end %>
                   </p>
               </section>
