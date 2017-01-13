@@ -2,7 +2,7 @@ class StepsController < ApplicationController
   include CurrentStatus
   before_action :set_step, only: [:end_game]
   before_action :get_status, only: [:show, :end_game]
-  before_action :set_next_step, only: [:show] #, :end_game]
+  before_action :set_next_step, only: [:show]
 
 
   # GET /steps
@@ -16,7 +16,7 @@ class StepsController < ApplicationController
   end
 
   def games
-    @games = Game.all
+    @games = Game.where.not(first_step: nil)
     if current_player
       @statuses = Status.where("player_id = ? and completed = false", current_player.id)
     else
@@ -40,17 +40,24 @@ class StepsController < ApplicationController
   def start
     @step = Step.find(params[:id])
     @choices = Outcome.where(step_id: @step.id)
-    @decision_choices = Decision.where(id: @choices.each.map { |choice| choice.decision_ids }.flatten.uniq )
+    decision_ids = @choices.each.map { |choice| choice.decision_ids }.flatten.uniq
+    @decision_choices = Decision.where(id: decision_ids)
     @messages = @step.stakeholder_messages
-    @status = Status.create(player_id: current_player.id, game_id: @step.game_id, trace: {"0"=>[[], @step.id]})
+    @status = Status.create(player_id: current_player.id, game_id: @step.game_id, trace: {"0"=>[decision_ids, @step.id]})
     set_status(@status.id)
   end
 
   def show
     @choices = Outcome.where(step_id: @step.id)
-    @decision_choices = Decision.where(id: @choices.each.map { |choice| choice.decision_ids }.flatten.uniq )
-    @status.day_no += 1 # @status.day_no + @decision.days
-    @status.trace["#{@status.day_no}"] = [@key, @step.id] # I think this should be current_step
+    decision_ids = @choices.each.map { |choice| choice.decision_ids }.flatten.uniq
+    @decision_choices = Decision.where(id: decision_ids)
+    a = params["decisions"]["decision_ids"]
+    a.map! { |x| x.to_i }
+
+    @status.trace["#{@status.day_no}"] = [a, params["current_step"].to_i]
+    @status.save
+    @status.day_no += 1
+    @status.trace["#{@status.day_no}"] = [[], @step.id]
     @status.save
     if @decision_choices == []
       redirect_to action: "end_game", id: @step

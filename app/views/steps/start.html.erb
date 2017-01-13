@@ -42,7 +42,7 @@
                         <br/>
                     <% end %>
                     <input type="hidden" name="current_step" value=<%= @step.id %> >
-                    <%= submit_tag "Go" %>
+                    <%= submit_tag "Go", class: "button green rounded go" %>
                 <% end %>
             <% else %>
                 <h2 class="action_text">Game Over!</h2>

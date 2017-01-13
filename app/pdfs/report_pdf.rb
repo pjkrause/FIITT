@@ -12,7 +12,12 @@ class ReportPdf < Prawn::Document
       step = Step.find(value.split(',').last.split(']').first.to_i)
       decision_choices = ""
       my_choices = ""
-      step.decisions.each {|decision| decision_choices += decision.choice + "\n\n"}
+      step.outcomes.each do |outcome|
+        Decision.where(id: outcome.decision_ids).each do |decision|
+          decision_choices += decision.choice + "\n\n"
+        end
+      end
+
       if value then
         intermediate = value.split('[[')[1]
         if intermediate != nil then
@@ -22,21 +27,11 @@ class ReportPdf < Prawn::Document
           end
         end
       end
-      
-      data << [key, step.status_message, decision_choices, my_choices, step.guidance] #
-      # step.status_message, step.decisions, decision_choices, step.guidance]
+
+      data << [key, step.status_message, decision_choices, my_choices, step.guidance]
+
     end
 
-    i=0
-    l = data.length
-    data.each do |datum|
-      i += 1
-      if i < l then
-        datum[3] = data[i][3]
-      else
-        datum[3] = ""
-      end
-    end
     t = make_table(data, header: :true, :column_widths => [30, 150, 120, 120, 120]) do
       row(0).font_style = :bold
       column(0).align = :center
@@ -55,7 +50,7 @@ class ReportPdf < Prawn::Document
 
   def indicator_data
     data = [["Day", "Status Message", "Decision Options", "Your Choices", "Guidance"]]
-    decision_choices = []  
+    decision_choices = []
     @status.trace.each do |key, value|
       step = Step.find(value.split(',').last.split(']').first.to_i)
       data << [key.to_i, step.status_message, step.decisions, decision_choices, step.guidance]
